@@ -1,12 +1,12 @@
 # ngsPopGen
 
 Several tools to perform population genetic analyses from NGS data:
- * __ngsFst__ - Quantificate of population genetic differentiation
- * __ngsCovar__ - Population structure via PCA (principal components analysis)
- * __ngs2dSFS__ - Estimate 2D-SFS from posterior probabilities of sample allele frequencies
- * __ngsStat__ - Estimates number of segregating sites, expected average heterozygosity, and number of fixed differences (if 2 populations provided).
+ * ` ngsFst`  - Quantificate of population genetic differentiation
+ * ` ngsCovar`  - Population structure via PCA (principal components analysis)
+ * ` ngs2dSFS`  - Estimate 2D-SFS from posterior probabilities of sample allele frequencies
+ * ` ngsStat`  - Estimates number of segregating sites, expected average heterozygosity, and number of fixed differences (if 2 populations provided).
 
-NOTE: In all analisis involving 2 populations, input data must refer to the exact same sites. If they differ (e.g. because of different filtering), use _GetSubSfs_ ([ngsUtils](https://github.com/mfumagalli/ngsUtils)) to get an overlapping subset of sites for both populations (you can use .mafs file from ANGSD as guideline).
+NOTE: In all analisis involving 2 populations, input data must refer to the exact same sites. If they differ (e.g. because of different filtering), use `GetSubSfs` ([ngsUtils](https://github.com/mfumagalli/ngsUtils)) to get an overlapping subset of sites for both populations (you can use .mafs file from ANGSD as guideline).
 
 
 ### Installation

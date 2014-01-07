@@ -1,20 +1,16 @@
 
-CC=g++
-CFLAGS=-lm -lz -O3 -Wall
+TOOLS = ngs2dSFS ngsCovar ngsFST ngsStat
 
-all: ngsCovar ngs2dSFS ngsFST ngsStat
+CC = g++
+CFLAGS = -lm -lz -O3 -Wall
 
-ngsCovar: ngsCovar.cpp
-	$(CC) $(CFLAGS) ngsCovar.cpp -o ngsCovar
+all: $(TOOLS)
 
-ngs2dSFS: ngs2dSFS.cpp
-	$(CC) $(CFLAGS) ngs2dSFS.cpp -o ngs2dSFS
+$(TOOLS):
+	$(CC) $(CFLAGS) $@.cpp -o $@
 
-ngsFST: ngsFST.cpp
-	$(CC) ngsFST.cpp -o ngsFST $(CFLAGS)
-
-ngsStat: ngsStat.cpp
-	$(CC) ngsStat.cpp -o ngsStat $(CFLAGS)
+test:
+	@cd examples/; sh ./test.sh 2> /dev/null; cd ../
 
 clean:
-	rm -rf *o ngsFST ngsCovar ngs2dSFS ngsStat
+	@rm -rf ngsFST ngsCovar ngs2dSFS ngsStat *.o examples/testA*
