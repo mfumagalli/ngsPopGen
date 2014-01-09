@@ -92,13 +92,13 @@ Program to compute the expected correlation matrix between individuals from geno
 
     % ./ngsCovar -probfile pop.geno -outfile pop.covar -nind 40 -nsites 100000 -block_size 20000 -call 0 -norm 0 -sfsfile pop.sfs.ml.norm
     
-    * not calling genotypes:
+* not calling genotypes:
 
 #
 
     % ./ngsCovar -probfile pop.geno -outfile pop.covar -nind 40 -nsites 100000 -block_size 20000 -call 1
     
-    * calling genotypes and filtering out rare variants:
+* calling genotypes and filtering out rare variants:
 
 #
 
