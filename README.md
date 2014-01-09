@@ -1,12 +1,12 @@
 # ngsPopGen
 
 Several tools to perform population genetic analyses from NGS data:
- * ` ngsFst`  - Quantificate of population genetic differentiation
+ * ` ngsFst`  - Quantificate population genetic differentiation
  * ` ngsCovar`  - Population structure via PCA (principal components analysis)
  * ` ngs2dSFS`  - Estimate 2D-SFS from posterior probabilities of sample allele frequencies
  * ` ngsStat`  - Estimates number of segregating sites, expected average heterozygosity, and number of fixed differences (if 2 populations provided).
 
-NOTE: In all analisis involving 2 populations, input data must refer to the exact same sites. If they differ (e.g. because of different filtering), use `GetSubSfs` ([ngsUtils](https://github.com/mfumagalli/ngsUtils)) to get an overlapping subset of sites for both populations (you can use .mafs file from ANGSD as guideline).
+NOTE: In all analisis involving 2 populations, input data must refer to the exact same sites. If they differ (e.g. because of different filtering), use `GetSubSfs` ([ngsUtils](https://github.com/mfumagalli/ngsUtils)) to get an overlapping subset of sites for both populations (you can use .mafs file from ANGSD to get the corresponding coordinates).
 
 
 ### Installation
@@ -28,9 +28,9 @@ Executables are built into the main directory. If you wish to clean all binaries
 ## ngsFST
 
 Program to estimate FST from NGS data. It computes expected genetic variance components and estimate per-site FST from those using methods-of-moments estimator. See Fumagalli et al. Genetics 2013 for more details.
-In input it receives posterior probabilities of sample allele frequencies for each population (.sfs or .sfs.norm files). It may receive also a 2D-SFS as a prior and in this case it gets in input posterior probabilities with uniform prior (ANGSD with -realSFS 1 only, do not run sfstools and set -islog 1). You can give also 2 marginal spectra as priors.
+In input it receives posterior probabilities of sample allele frequencies for each population. It may receive also a 2D-SFS as a prior and in this case it receives as input posterior probabilities with uniform prior (ANGSD with -realSFS 1 only, and then set -islog 1). You can give also 2 marginal spectra as priors.
 
-The output is a tab-separated text file. Each row represents a site. Columns are: EA, EAB, FACT, (EA/EAB)+FACT, pvar; where EA is the expectation of genetic variance between populations, EAB is the expectation of the total genetic variance, FACT is the correcting factor for the ratio of expectations, (EA/EAB)+FACT is the per-site FST value, pvar is the probability for the site of being variable.
+The output is a tab-separated text file. Each row represents a site. Columns are labelled: EA, EAB, FACT, (EA/EAB)+FACT, pvar; where EA is the expectation of genetic variance between populations, EAB is the expectation of the total genetic variance, FACT is the correcting factor for the ratio of expectations, (EA/EAB)+FACT is the per-site FST value, pvar is the probability for the site of being variable.
 
 
 ### Usage
@@ -62,7 +62,7 @@ The output is a tab-separated text file. Each row represents a site. Columns are
 
 #### Parameters:
 
-    -postfiles: files with posterior probabilities of sample allele frequencies (.sfs) for each population
+    -postfiles: files with posterior probabilities of sample allele frequencies (.sfs or .saf) for each population
     -priorfile: 2D-SFS to be used as a prior; you can use ngs2dSfs with parameter -relative set to 1
     -priorfiles: 2 marginal spectra to be used as priors
     -nind: number of individuals for each population
@@ -87,19 +87,21 @@ Program to compute the expected correlation matrix between individuals from geno
 #### Examples:
 
     % ./ngsCovar -probfile pop.geno -outfile pop.covar -nind 40 -nsites 100000 -block_size 20000 -call 0 -sfsfile pop.sfs.ml.norm
+    
 
     % ./ngsCovar -probfile pop.geno -outfile pop.covar -nind 40 -nsites 100000 -block_size 20000 -call 1
-
     % ./ngsCovar -probfile pop.geno -outfile pop.covar -nind 40 -nsites 100000 -block_size 20000 -call 1 -minmaf 0.05
 
+
 #### Parameters:
+
     -probfile: file with genotype posterior probabilities
     -sfsfile: file with sample allele frequency posterior probabilities
     -nind: number of individuals
     -nsites: total number of sites; in case of a site subset this is the upper limit
     -offset: in case of a site subset, this is the lower limit
     -genoquality: text file with 'nsites' lines stating whether to use (1) or ignore (0) the site
-    -norm: 0 [no normalization]
+    -norm: 0 [no normalization, recommended if no SNP calling is performed]
            1 [matrix is normalized by p(1-p) as in Patterson et al (2006)]
            2 [normalized by 2p(1-p)]
     -minmaf: ignore sites below this threshold of minor allele frequency
@@ -135,16 +137,20 @@ Program to estimate 2D-SFS from posterior probabilities of sample allele frequen
 
 ## ngsStat
 
-Program to compute estimates of the number of segregating sites, the expected average heterozygosity, and the number of fixed differences (if 2 populations data is provided). It receives in input sample allele frequency posterior probabilities (from ANGSD) from 1 or 2 populations. Output is a text file with columns: start, end, segregating sites (pop 1), heterozygosity (pop 1), segregating sites (pop 2), heterozygosity (pop 2), fixed differences.
+Program to compute estimates of the number of segregating sites, the expected average heterozygosity, and the number of fixed differences (if 2 populations data is provided). It receives as input sample allele frequency posterior probabilities (from ANGSD) from 1 or 2 populations. Output is a text file with columns: start, end, segregating sites (pop 1), heterozygosity (pop 1), segregating sites (pop 2), heterozygosity (pop 2), fixed differences.
 
 #### Example:
+
     ./ngsStat -npop 2 -postfiles pop1.sfs.norm pop2.sfs.norm -nsites 1000 -iswin 1 -nind 10 50 -islog 0 -outfile pops.stat -isfold 0 -verbose 0 -block_size 100
+    
 
     ./ngsStat -npop 1 -postfiles pop1.sfs.norm -nsites 1000 -iswin 1 -nind 10 -islog 0 -outfile pops.stat -isfold 0 -verbose 0 -block_size 100
+
 
     ./ngsStat -npop 1 -postfiles pop1.sfs.norm -nsites 1000 -iswin 0 -nind 10 -islog 0 -outfile pops.stat -isfold 0 -verbose 0
 
 #### Parameters:
+
     -npop: number of populations (should be the first one to be specified)
     -postfiles: file with sample allele frequency posterior probabilities for each population
     -nind: number of individuals
