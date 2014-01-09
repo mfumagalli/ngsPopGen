@@ -86,10 +86,22 @@ Program to compute the expected correlation matrix between individuals from geno
 
 #### Examples:
 
-    % ./ngsCovar -probfile pop.geno -outfile pop.covar -nind 40 -nsites 100000 -block_size 20000 -call 0 -sfsfile pop.sfs.ml.norm
+* not calling genotypes and weighting by each site's probability of being variable (recommended if no SNP calling is performed and coverage is low):
+
+#
+
+    % ./ngsCovar -probfile pop.geno -outfile pop.covar -nind 40 -nsites 100000 -block_size 20000 -call 0 -norm 0 -sfsfile pop.sfs.ml.norm
     
+    * not calling genotypes:
+
+#
 
     % ./ngsCovar -probfile pop.geno -outfile pop.covar -nind 40 -nsites 100000 -block_size 20000 -call 1
+    
+    * calling genotypes and filtering out rare variants:
+
+#
+
     % ./ngsCovar -probfile pop.geno -outfile pop.covar -nind 40 -nsites 100000 -block_size 20000 -call 1 -minmaf 0.05
 
 
@@ -141,11 +153,21 @@ Program to compute estimates of the number of segregating sites, the expected av
 
 #### Example:
 
+* 2 populations, sliding windows of 100 sites (latter recommended only if no missing data is present):
+
+#
+
     ./ngsStat -npop 2 -postfiles pop1.sfs.norm pop2.sfs.norm -nsites 1000 -iswin 1 -nind 10 50 -islog 0 -outfile pops.stat -isfold 0 -verbose 0 -block_size 100
     
+* 1 populations, sliding windows of 100 sites (latter recommended only if no missing data is present):
+
+# 
 
     ./ngsStat -npop 1 -postfiles pop1.sfs.norm -nsites 1000 -iswin 1 -nind 10 -islog 0 -outfile pops.stat -isfold 0 -verbose 0 -block_size 100
+    
+* 1 population, values estimated at each site (recommended in case of missing data):
 
+#
 
     ./ngsStat -npop 1 -postfiles pop1.sfs.norm -nsites 1000 -iswin 0 -nind 10 -islog 0 -outfile pops.stat -isfold 0 -verbose 0
 
@@ -158,7 +180,7 @@ Program to compute estimates of the number of segregating sites, the expected av
     -firstbase: in case of a site subset, this is the lower limit
     -isfold: boolean, is your data folded?
     -islog: boolean, are postfiles in -log?
-    -iswin: if set to 1, chuncks are considered non-overlapping slidding-windows
+    -iswin: if set to 1, chuncks are considered non-overlapping sliding-windows
     -outfile: name of output file
     -block_size: number of sites in each chunk (for memory reasons)
     -verbose: level of verbosity
