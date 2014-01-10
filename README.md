@@ -30,7 +30,7 @@ Executables are built into the main directory. If you wish to clean all binaries
 Program to estimate FST from NGS data. It computes expected genetic variance components and estimate per-site FST from those using methods-of-moments estimator. See Fumagalli et al. Genetics 2013 for more details.
 In input it receives posterior probabilities of sample allele frequencies for each population. It may receive also a 2D-SFS as a prior and in this case it receives as input posterior probabilities with uniform prior (ANGSD with -realSFS 1 only, and then set -islog 1). You can give also 2 marginal spectra as priors.
 
-The output is a tab-separated text file. Each row represents a site. Columns are labelled: EA, EAB, FACT, (EA/EAB)+FACT, pvar; where EA is the expectation of genetic variance between populations, EAB is the expectation of the total genetic variance, FACT is the correcting factor for the ratio of expectations, (EA/EAB)+FACT is the per-site FST value, pvar is the probability for the site of being variable.
+The output is a tab-separated text file. Each row represents a site. Columns are labelled: A, AB, f, FST, Pvar; where A is the expectation of genetic variance between populations, AB is the expectation of the total genetic variance, f is the correcting factor for the ratio of expectations, FST is the per-site FST value, Pvar is the probability for the site of being variable.
 
 
 ### Usage
