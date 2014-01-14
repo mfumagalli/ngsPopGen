@@ -128,7 +128,7 @@ Program to compute the expected correlation matrix between individuals from geno
 
 ## ngs2dSFS
 
-Program to estimate 2D-SFS from posterior probabilities of sample allele frequencies.
+Program to estimate 2D-SFS from posterior probabilities of sample allele frequencies. Output file reports the occurrence of sites at distinct joint allele frequencies. This spectrum is a (2N1+1)x(2N2+2) matrix with N1 and N2 number of individuals at the two populations. Please note that cells are zero-based ordered. As an example, value reported in the cell [4,3] represents the frequency of sites with allele frequency 3 and 2 at population 1 and 2 respectively.
 
 #### Example:
 
