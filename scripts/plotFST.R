@@ -5,27 +5,39 @@ library(optparse)
 library(ggplot2)
 
 option_list <- list(make_option(c('-i','--in_file'), action='store', type='character', default=NULL, help='Input file'),
+make_option(c('-p','--pos_file'), action='store', type='character', default=NULL, help='Input position file'),
 make_option(c('-w','--window'), action='store', type='character', default=1, help='Window length'),
 make_option(c('-s','--step'), action='store', type='character', default=1, help='Step size'),
+make_option(c('-t','--th'), action='store', type='character', default=0, help='Minimu probability of being variable'),
 make_option(c('-o','--out_file'), action='store', type='character', default=NULL, help='Output file')
                     )
 opt <- parse_args(OptionParser(option_list = option_list))
 
 # Read input file
 values <- read.table(opt$in_file, stringsAsFact=F);
+ind <- which(values[,5]>=as.numeric(opt$th))
+pos <- as.numeric(readLines(opt$pos_file))
+if (length(ind)!=nrow(values)) stop("Dimensions of fst values and positions must match. Terminate.\n");
+values <- values[ind,]
+pos <- pos[ind,]
+cat("Removed",length(ind),"sites; now there are",nrow(values),"sites going from",min(pos),"to",max(pos),"\n")
 cat("Overall FST:",sum(values[,1])/sum(values[,2]),"\n");
 
 # Windows
-len=nrow(values);
+len=max(pos)
 win=as.numeric(opt$window);
 step=as.numeric(opt$step);
-start=seq(1, len-win, step);
-end=start+win; # it requires that all windows have the same nr of sites, if less the window (usually at the end) is discarded
-pos=start+win;
-fst=c(); for (i in 1:length(start)) fst[i]=sum(values[start[i]:end[i],1])/sum(values[start[i]:end[i],2]);
+start=seq(min(pos), len, step);
+end=start+win-1;
+wpos=round(start+(win/2)); # position of the window in the plot (center)
+fst=c(); 
+for (i in 1:length(start)) {
+	ipos=which(pos>=starts[i] & pos<=ends[i])
+	fst[i]=sum(values[ipos,1])/sum(values[ipos,2]);
+}
 
 # Data
-df=data.frame(cbind(Pop=rep(1,length(pos)), Pos=pos, Value=fst));
+df=data.frame(cbind(Pop=rep(1,length(wpos)), Pos=wpos, Value=fst));
 df[,2:3]=sapply(df[,2:3], as.character)
 df[,2:3]=sapply(df[,2:3], as.numeric)
 
