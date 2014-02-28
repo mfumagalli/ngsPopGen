@@ -7,6 +7,19 @@ Several tools to perform population genetic analyses from NGS data:
  * ` ngsStat`  - Estimates number of segregating sites, expected average heterozygosity, and number of fixed differences (if 2 populations provided).
 
 NOTE: In all analisis involving 2 populations, input data must refer to the exact same sites. If they differ (e.g. because of different filtering), use `GetSubSfs` ([ngsUtils](https://github.com/mfumagalli/ngsUtils)) to get an overlapping subset of sites for both populations (you can use .mafs file from ANGSD to get the corresponding coordinates).
+For instance you can get the overlapping sites with (using ANGSD +0.579):
+
+    gunzip -c file1.saf.pos.gz > A.saf.pos
+    gunzip -c file2.saf.pos.gz > B.saf.pos
+    awk 'FNR==NR {x[$1"_"$2]=NR; next} x[$1"_"$2] {print x[$1"_"$2]; print FNR > "/dev/stderr"}' A.saf.pos B.saf.pos >A.pos 2>B.pos
+    rm A.saf.pos B.saf.pos
+
+and then use `GetSubSfs` as:
+
+    ./ngsTools/ngsUtils/GetSubSfs -infile file1.sin.saf -posfile A.pos -nind 7 -nsites 733744 -len 717017 -outfile file1.sin.fix.saf
+    
+and so on for the second file.
+A quick trick to check that everything went fine is to retrieve the dimension of each file (using "ls -l"), then divide this number by 8 and then by the double of the number of individuals plus 1. You should get the final number of sites.
 
 
 ### Installation
@@ -54,7 +67,7 @@ The output is a tab-separated text file. Each row represents a site. Columns are
 
     % ./ngsFST -postfiles pop1.sfs.ml.norm pop2.sfs.ml.norm -nind 20 20 -nsites 100000 -block_size 20000 -outfile pops.fst -islog 0
 
-* use posterior probabilities of allele frequencies from a uniform prior without initially folding your data:
+* use posterior probabilities of allele frequencies from a uniform prior:
 
 #
 
@@ -68,13 +81,13 @@ The output is a tab-separated text file. Each row represents a site. Columns are
     -nind: number of individuals for each population
     -nsites: total number of sites; in case of a site subset this is the upper limit
     -firstbase: in case of a site subset, this is the lower limit
-    -isfold: boolean, is your data folded?
+    -isfold: boolean, is your data folded? You SHOULD not use this option! This will be deprecated soon.
     -islog: boolean, are postfiles in -log?
     -outfile: name of the output file
     -block_size: number of sites in each chunk (for memory reasons)
     -verbose: level of verbosity
 
-NOTE: Currently, it is not possible to estimate a joint-SFS from folded data. Also, one should check whether each site has the same minor allele for both populations (hardly met for many cases). Therefore, for _Fst_ estimation, a solution would be to use posterior probabilities of allele frequencies from a uniform prior (see examples).
+NOTE: Currently, it is not possible to estimate a joint-SFS from folded data. Also, one should check whether each site has the same minor allele for both populations (hardly met for many cases), so `isfold` option will be removed soon for safety. Therefore, for _Fst_ estimation, a solution would be to use posterior probabilities of allele frequencies using the non-reference site frequency spectrum if the ancestral-derived polarization is not available.
 
 ---
 
