@@ -7,10 +7,10 @@ CFLAGS = -lm -lz -O3 -Wall
 all: $(TOOLS)
 
 $(TOOLS):
-	$(CC) $(CFLAGS) $@.cpp -o $@
+	$(CC) $(CFLAGS) $@.cpp -o bin/$@
 
 test:
 	@cd examples/; sh ./test.sh 2> /dev/null; cd ../
 
 clean:
-	@rm -rf ngsFST ngsCovar ngs2dSFS ngsStat *.o examples/testA*
+	@rm -rf bin/ngsFST bin/ngsCovar bin/ngs2dSFS bin/ngsStat *.o examples/testA*
