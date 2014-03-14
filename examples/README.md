@@ -1,3 +1,9 @@
+
+IMPORTANT NOTE:
+These examples may not work with more recent versions of ANGSD.
+We will update everything when a stable final version of ANGSD will be available.
+In doubt, please contact the authors for questions on the usage of ngsTools with the current version of ANGSD.
+
 # Posterior probabilities of genotypes and sample allele frequencies
 We use ANGSD to compute genotype posterior probabilities:
 
