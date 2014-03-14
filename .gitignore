@@ -3,4 +3,4 @@ ngsCovar
 ngs2dSFS
 ngsStat
 *.o
-examples/
+examples/testA*
