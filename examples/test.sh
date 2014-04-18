@@ -7,7 +7,7 @@ ANGSD=../../angsd
 
 
 ##### Genotypes' and sample allele frequencies' posterior probabilities
-$ANGSD/angsd -sim1 $SIM_DATA/testA.glf.gz -nInd 24 -doGeno 32 -doPost 1 -doMaf 2 -doSaf 1 -out testA -doMajorMinor 1
+$ANGSD/angsd -sim1 $SIM_DATA/testA.glf.gz -nInd 24 -doMajorMinor 1 -doMaf 1 -doPost 1 -doGeno 32 -doSaf 1 -out testA
 $ANGSD/misc/emOptim2 testA.saf 48 -nSites 10000 > testA.saf.ml
 $ANGSD/angsd -sim1 $SIM_DATA/testA.glf.gz -nInd 24 -doSaf 1 -pest testA.saf.ml -out testA.rf
 
@@ -20,7 +20,7 @@ $ANGSD/angsd -sim1 $SIM_DATA/testA.glf.gz -nInd 24 -doSaf 1 -pest testA.saf.ml -
 
 ##### PCA
 # Get covariance matrix
-gunzip testA.geno.gz
+gunzip -f testA.geno.gz
 ../ngsCovar -probfile testA.geno -outfile testA.covar1 -nind 24 -nsites 10000 -call 0 -sfsfile testA.rf.saf -norm 0
 ../ngsCovar -probfile testA.geno -outfile testA.covar2 -nind 24 -nsites 10000 -call 0 -minmaf 0.05
 ../ngsCovar -probfile testA.geno -outfile testA.covar3 -nind 24 -nsites 10000 -call 1 -minmaf 0.05
@@ -37,11 +37,11 @@ gunzip testA.geno.gz
 
 ##### Statistics
 # Pop 1
-$ANGSD/angsd -sim1 $SIM_DATA/testA1.glf.gz -nInd 10 -doGeno 32 -doPost 1 -doMaf 2 -doSaf 1 -out testA1 -doMajorMinor 1
+$ANGSD/angsd -sim1 $SIM_DATA/testA1.glf.gz -nInd 10 -doMajorMinor 1 -doMaf 1 -doPost 1 -doGeno 32 -doSaf 1 -out testA1
 $ANGSD/misc/emOptim2 testA1.saf 20 -nSites 10000 > testA1.saf.ml
 $ANGSD/angsd -sim1 $SIM_DATA/testA1.glf.gz -nInd 10 -doSaf 1 -pest testA1.saf.ml -out testA1.rf
 # Pop 2
-$ANGSD/angsd -sim1 $SIM_DATA/testA2.glf.gz -nInd 8 -doGeno 32 -doPost 1 -doMaf 2 -doSaf 1 -out testA2 -doMajorMinor 1
+$ANGSD/angsd -sim1 $SIM_DATA/testA2.glf.gz -nInd 8 -doMajorMinor 1 -doMaf 1 -doPost 1 -doGeno 32 -doSaf 1 -out testA2
 $ANGSD/misc/emOptim2 testA2.saf 16 -nSites 10000 > testA2.saf.ml
 $ANGSD/angsd -sim1 $SIM_DATA/testA2.glf.gz -nInd 8 -doSaf 1 -pest testA2.saf.ml -out testA2.rf
 
