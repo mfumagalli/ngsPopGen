@@ -3,9 +3,16 @@
 
 ## Plot FST values
 
-     Rscript plotFST.R -i infile.fst -o outfile.eps -w win -s step      
+     Rscript plotFST.R -i infile.fst -o outfile -p positions.txt -w win -s step -th min_prob_variable      
 
-where `infile.fst` is the output of `ngsFST`, `win` is the window size and `step` is the step for the sliding windows. Please note that this scripts assumes no missing data.
+where:
+ `infile.fst` is the output of `ngsFST`, 
+ `positions.txt` is a single column new-line separated numbers of genomic position (on the same chromosome) for corresponding values of per-site FST,
+ `win` is the window size,
+ `step` is the step for the sliding windows,
+ 'th` is the minimum threshold on the probability of being variable for a site to be kept in the analysis.
+
+This will generate 2 files, a plot `outfile.eps` and a text file `outfile.txt` with all values for each window.
 
 ## Plot summary statistics
 

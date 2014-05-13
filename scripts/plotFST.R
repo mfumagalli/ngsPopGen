@@ -40,11 +40,12 @@ for (i in 1:length(start)) {
 df=data.frame(cbind(Pop=rep(1,length(wpos)), Pos=wpos, Value=fst));
 df[,2:3]=sapply(df[,2:3], as.character)
 df[,2:3]=sapply(df[,2:3], as.numeric)
+write.table(df, file=paste(opt$out_file,".txt",sep="",collapse=""), sep="\t", quote=F, row.names=F, col.names=F)
 
 # Plot
 title = expression(F[ST]);
 ggplot(data=df, aes(x=Pos, y=Value)) + geom_line() + ggtitle(title);
-ggsave(opt$out_file)
+ggsave(paste(opt$out_file,".eps",sep="",collapse=""))
 unlink("Rplots.pdf", force=TRUE)
 
 
