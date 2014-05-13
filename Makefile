@@ -10,7 +10,7 @@ $(TOOLS):
 	$(CC) $(CFLAGS) $@.cpp -o $@
 
 test:
-	@cd examples/; sh ./test.sh 2> /dev/null; cd ../
+	@cd examples/; bash test.sh 2> test.log; cd ../
 
 clean:
 	@rm -rf ngsFST ngsCovar ngs2dSFS ngsStat *.o examples/testA*

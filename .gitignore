@@ -4,3 +4,4 @@ ngs2dSFS
 ngsStat
 *.o
 examples/testA*
+examples/test.log
