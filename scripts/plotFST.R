@@ -20,7 +20,7 @@ pos <- as.numeric(readLines(opt$pos_file))
 if (length(pos)!=nrow(values)) stop("Dimensions of fst values and positions must match. Terminate.\n");
 values <- values[ind,]
 pos <- pos[ind]
-cat("Removed",length(ind),"sites; now there are",nrow(values),"sites going from",min(pos),"to",max(pos),"\n")
+cat("After removing sites, now there are",nrow(values),"sites going from",min(pos),"to",max(pos),"\n")
 cat("Overall FST:",sum(values[,1])/sum(values[,2]),"\n");
 
 # Windows
@@ -32,7 +32,7 @@ end=start+win-1;
 wpos=round(start+(win/2)); # position of the window in the plot (center)
 fst=c(); 
 for (i in 1:length(start)) {
-	ipos=which(pos>=starts[i] & pos<=ends[i])
+	ipos=which(pos>=start[i] & pos<=end[i])
 	fst[i]=sum(values[ipos,1])/sum(values[ipos,2]);
 }
 
