@@ -17,7 +17,7 @@ opt <- parse_args(OptionParser(option_list = option_list))
 values <- read.table(opt$in_file, stringsAsFact=F);
 ind <- which(values[,5]>=as.numeric(opt$th))
 pos <- as.numeric(readLines(opt$pos_file))
-if (length(ind)!=nrow(values)) stop("Dimensions of fst values and positions must match. Terminate.\n");
+if (length(pos)!=nrow(values)) stop("Dimensions of fst values and positions must match. Terminate.\n");
 values <- values[ind,]
 pos <- pos[ind,]
 cat("Removed",length(ind),"sites; now there are",nrow(values),"sites going from",min(pos),"to",max(pos),"\n")
