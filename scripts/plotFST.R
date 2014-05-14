@@ -19,7 +19,7 @@ ind <- which(values[,5]>=as.numeric(opt$th))
 pos <- as.numeric(readLines(opt$pos_file))
 if (length(pos)!=nrow(values)) stop("Dimensions of fst values and positions must match. Terminate.\n");
 values <- values[ind,]
-pos <- pos[ind,]
+pos <- pos[ind]
 cat("Removed",length(ind),"sites; now there are",nrow(values),"sites going from",min(pos),"to",max(pos),"\n")
 cat("Overall FST:",sum(values[,1])/sum(values[,2]),"\n");
 
