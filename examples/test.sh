@@ -4,12 +4,15 @@ ANGSD=../../angsd
 
 
 
+##### Clean-up
+rm -f testA*
+
 
 
 ##### Genotypes' and sample allele frequencies' posterior probabilities
-$ANGSD/angsd -sim1 $SIM_DATA/testA.glf.gz -nInd 24 -doMajorMinor 1 -doMaf 1 -doPost 1 -doGeno 32 -doSaf 1 -out testA
+$ANGSD/angsd -glf $SIM_DATA/testA.glf.gz -fai $SIM_DATA/testAF.ANC.fai -nInd 24 -doMajorMinor 1 -doMaf 1 -doPost 1 -doGeno 32 -doSaf 1 -anc $SIM_DATA/testAF.ANC.fas -out testA
 $ANGSD/misc/emOptim2 testA.saf 48 -nSites 10000 > testA.saf.ml
-$ANGSD/angsd -sim1 $SIM_DATA/testA.glf.gz -nInd 24 -doSaf 1 -pest testA.saf.ml -out testA.rf
+$ANGSD/angsd -glf $SIM_DATA/testA.glf.gz -fai $SIM_DATA/testAF.ANC.fai -nInd 24 -doSaf 1 -anc $SIM_DATA/testAF.ANC.fas -out testA.rf
 
 # Estimated and true pooled site frequency spectrum
 #Rscript --vanilla --slave -e 'barplot(rbind(as.numeric(scan("../../ngsSim/examples/testA.frq", what="char")), exp(as.numeric(scan("testA.saf.ml", what="char")))), beside=T, legend=c("True","Estimated"))'
@@ -37,13 +40,13 @@ gunzip -f testA.geno.gz
 
 ##### Statistics
 # Pop 1
-$ANGSD/angsd -sim1 $SIM_DATA/testA1.glf.gz -nInd 10 -doMajorMinor 1 -doMaf 1 -doPost 1 -doGeno 32 -doSaf 1 -out testA1
+$ANGSD/angsd -glf $SIM_DATA/testA1.glf.gz -fai $SIM_DATA/testAF.ANC.fai -nInd 10 -doMajorMinor 1 -doMaf 1 -doPost 1 -doGeno 32 -doSaf 1 -anc $SIM_DATA/testAF.ANC.fas -out testA1
 $ANGSD/misc/emOptim2 testA1.saf 20 -nSites 10000 > testA1.saf.ml
-$ANGSD/angsd -sim1 $SIM_DATA/testA1.glf.gz -nInd 10 -doSaf 1 -pest testA1.saf.ml -out testA1.rf
+$ANGSD/angsd -glf $SIM_DATA/testA1.glf.gz -fai $SIM_DATA/testAF.ANC.fai -nInd 10 -doSaf 1 -anc $SIM_DATA/testAF.ANC.fas -pest testA1.saf.ml -out testA1.rf
 # Pop 2
-$ANGSD/angsd -sim1 $SIM_DATA/testA2.glf.gz -nInd 8 -doMajorMinor 1 -doMaf 1 -doPost 1 -doGeno 32 -doSaf 1 -out testA2
+$ANGSD/angsd -glf $SIM_DATA/testA2.glf.gz -fai $SIM_DATA/testAF.ANC.fai -nInd 8 -doMajorMinor 1 -doMaf 1 -doPost 1 -doGeno 32 -doSaf 1 -anc $SIM_DATA/testAF.ANC.fas -out testA2
 $ANGSD/misc/emOptim2 testA2.saf 16 -nSites 10000 > testA2.saf.ml
-$ANGSD/angsd -sim1 $SIM_DATA/testA2.glf.gz -nInd 8 -doSaf 1 -pest testA2.saf.ml -out testA2.rf
+$ANGSD/angsd -glf $SIM_DATA/testA2.glf.gz -fai $SIM_DATA/testAF.ANC.fai -nInd 8 -doSaf 1 -anc $SIM_DATA/testAF.ANC.fas -pest testA2.saf.ml -out testA2.rf
 
 # Get stats
 ../ngsStat -npop 2 -postfiles testA1.rf.saf testA2.rf.saf -nsites 10000 -iswin 1 -nind 10 8 -outfile testA.stat -isfold 0 -islog 0 -block_size 100
