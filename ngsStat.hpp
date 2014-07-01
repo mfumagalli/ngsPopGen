@@ -316,6 +316,9 @@ void computeStats2Pops(matrix<double> &post1, int verbose, FILE *outpost, int is
   hetero2.x=nsites;
   array<double> fixed;
   fixed.x=nsites;
+  array<double> dxy;
+  dxy.x=nsites;
+
   double *tmp1= new double [nsites];
   for (int i=0; i<nsites; i++) { tmp1[i]=0.0; }
   segsites1.data=tmp1;
@@ -331,6 +334,9 @@ void computeStats2Pops(matrix<double> &post1, int verbose, FILE *outpost, int is
   double *tmp5= new double [nsites];
   for (int i=0; i<nsites; i++) { tmp5[i]=0.0; }
   fixed.data=tmp5;
+  double *tmp6= new double [nsites];
+  for (int i=0; i<nsites; i++) { tmp6[i]=0.0; }
+  dxy.data=tmp6;
 
   double temp=0.0;
 
@@ -340,6 +346,7 @@ void computeStats2Pops(matrix<double> &post1, int verbose, FILE *outpost, int is
   double sum_segsites1=0.0, sum_hetero1=0.0;
   double sum_segsites2=0.0, sum_hetero2=0.0;
   double sum_fixed=0.0;
+  double sum_dxy=0.0;
 
   for (int s=0; s<nsites; s++) {
 
@@ -364,22 +371,41 @@ void computeStats2Pops(matrix<double> &post1, int verbose, FILE *outpost, int is
     if (isfold) {
       fixed.data[s]=-999.9;
     } else {
-      fixed.data[s]=post1.data[s][0]*post2.data[s][post2.y-1] + post2.data[s][0]*post1.data[s][post1.y-1];
+      fixed.data[s]=post1.data[s][0]*post2.data[s][post2.y-1] + post2.data[s][0]*post1.data[s][post1.y-1]; 
     }
     sum_fixed = sum_fixed + fixed.data[s];
 
-    if (iswin==0) fprintf(outpost, "%d\t%d\t%f\t%f\t%f\t%f\t%f\n", start, start, segsites1.data[s], hetero1.data[s], segsites2.data[s], hetero2.data[s], fixed.data[s]);
+    if (isfold) {
+      dxy.data[s]=-999.9;
+    } else {
+
+      dxy.data[s]=0.0;
+
+      for (int i=0; i<post1.y; i++) {
+        for (int j=0; j<post2.y; j++) {
+
+          dxy.data[s] = dxy.data[s] + ( ( (i/(nind1*2.0))*(((nind2*2.0)-j)/(nind2*2.0)) + (((nind1*2.0)-i)/(nind1*2.0))*(j/(nind2*2.0)) ) * post1.data[s][i] * post2.data[s][j] ) ;
+
+        }
+      }
+
+    }
+    sum_dxy = sum_dxy + dxy.data[s];
+
+
+    if (iswin==0) fprintf(outpost, "%d\t%d\t%f\t%f\t%f\t%f\t%f\t%f\n", start, start, segsites1.data[s], hetero1.data[s], segsites2.data[s], hetero2.data[s], fixed.data[s], dxy.data[s]);
 
   } // end cycle s
 
   // compute sum across all sites 
-  if (iswin==1) fprintf(outpost, "%d\t%d\t%f\t%f\t%f\t%f\t%f\n", start0, start, sum_segsites1, sum_hetero1, sum_segsites2, sum_hetero2, sum_fixed);
+  if (iswin==1) fprintf(outpost, "%d\t%d\t%f\t%f\t%f\t%f\t%f\t%f\n", start0, start, sum_segsites1, sum_hetero1, sum_segsites2, sum_hetero2, sum_fixed, sum_dxy);
 
   delete [] segsites1.data;
   delete [] hetero1.data;
   delete [] segsites2.data;
   delete [] hetero2.data;
   delete [] fixed.data;
+  delete [] dxy.data;
 
 }
 
