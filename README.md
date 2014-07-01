@@ -10,7 +10,7 @@ Several tools to perform population genetic analyses from NGS data:
  * ` ngsFst`  - Quantificate population genetic differentiation
  * ` ngsCovar`  - Population structure via PCA (principal components analysis)
  * ` ngs2dSFS`  - Estimate 2D-SFS from posterior probabilities of sample allele frequencies
- * ` ngsStat`  - Estimates number of segregating sites, expected average heterozygosity, and number of fixed differences (if 2 populations provided).
+ * ` ngsStat`  - Estimates number of segregating sites, expected average heterozygosity, and number of fixed differences and Dxy (if 2 populations provided).
 
 NOTE: In all analisis involving 2 populations, input data must refer to the exact same sites. If they differ (e.g. because of different filtering), use `GetSubSfs` ([ngsUtils](https://github.com/mfumagalli/ngsUtils)) to get an overlapping subset of sites for both populations (you can use .mafs file from ANGSD to get the corresponding coordinates).
 For instance you can get the overlapping sites with (using ANGSD +0.579):
@@ -168,7 +168,7 @@ Program to estimate 2D-SFS from posterior probabilities of sample allele frequen
 
 ## ngsStat
 
-Program to compute estimates of the number of segregating sites, the expected average heterozygosity, and the number of fixed differences (if 2 populations data is provided). It receives as input sample allele frequency posterior probabilities (from ANGSD) from 1 or 2 populations. Output is a text file with columns: start, end, segregating sites (pop 1), heterozygosity (pop 1), segregating sites (pop 2), heterozygosity (pop 2), fixed differences.
+Program to compute estimates of the number of segregating sites, the expected average heterozygosity, and the number of fixed differences (if 2 populations data is provided). It receives as input sample allele frequency posterior probabilities (from ANGSD) from 1 or 2 populations. Output is a text file with columns: start, end, segregating sites (pop 1), heterozygosity (pop 1), segregating sites (pop 2), heterozygosity (pop 2), fixed differences, dxy.
 
 #### Example:
 
