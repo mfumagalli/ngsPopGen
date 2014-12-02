@@ -1,9 +1,4 @@
 
-IMPORTANT NOTE:
-These examples may not work with more recent versions of ANGSD.
-We will update everything when a stable final version of ANGSD will be available.
-In doubt, please contact the authors for questions on the usage of ngsTools with the current version of ANGSD.
-
 # ngsPopGen
 
 Several tools to perform population genetic analyses from NGS data:
@@ -12,20 +7,46 @@ Several tools to perform population genetic analyses from NGS data:
  * ` ngs2dSFS`  - Estimate 2D-SFS from posterior probabilities of sample allele frequencies
  * ` ngsStat`  - Estimates number of segregating sites, expected average heterozygosity, and number of fixed differences and Dxy (if 2 populations provided).
 
-NOTE: In all analisis involving 2 populations, input data must refer to the exact same sites. If they differ (e.g. because of different filtering), use `GetSubSfs` ([ngsUtils](https://github.com/mfumagalli/ngsUtils)) to get an overlapping subset of sites for both populations (you can use .mafs file from ANGSD to get the corresponding coordinates).
-For instance you can get the overlapping sites with (using ANGSD +0.579):
+IMPORTANT NOTE i): 
+
+In all analisis involving 2 populations, input data must refer to the exact same sites. If they differ (e.g. because of different filtering), you must first get the overlapping subset of sites for both populations.
+
+To achieve this, you can follow instructions given ([here](http://popgen.dk/angsd/index.php/2d_SFS_Estimation)):
+
+    gunzip -c pop1.saf.pos.gz pop2.saf.pos.gz | sort  -S 50% | uniq -d | sort -k1,1 -S 50% > intersect.txt
+
+and then you recreate your files using ANGSD adding the filtering `-sites intersect.txt`, for instance:
+
+    angsd -GL 1 -b pop1.list -anc anc.fa -r chr1: -P 10 -out pop1 -sites intersect.txt -doSaf 1
+    angsd -GL 1 -b pop2.list -anc anc.fa -r chr1: -P 10 -out pop2 -sites intersect.txt -doSaf 1
+
+Alternatively (but this may require a lot of memory for big datasets), you can get the overlapping sites with (using ANGSD +0.579):
 
     gunzip -c file1.saf.pos.gz > A.saf.pos
     gunzip -c file2.saf.pos.gz > B.saf.pos
     awk 'FNR==NR {x[$1"_"$2]=NR; next} x[$1"_"$2] {print x[$1"_"$2]; print FNR > "/dev/stderr"}' A.saf.pos B.saf.pos >A.pos 2>B.pos
     rm A.saf.pos B.saf.pos
 
-and then use `GetSubSfs` as:
+and then use `GetSubSfs` ([ngsUtils](https://github.com/mfumagalli/ngsUtils)) as:
 
     ./ngsTools/ngsUtils/GetSubSfs -infile file1.sin.saf -posfile A.pos -nind 7 -nsites 733744 -len 717017 -outfile file1.sin.fix.saf
     
 and so on for the second file.
+
 A quick trick to check that everything went fine is to retrieve the dimension of each file (using "ls -l"), then divide this number by 8 and then by the double of the number of individuals plus 1. You should get the final number of sites.
+
+
+IMPORTANT NOTE ii): 
+
+The use of folded data (spectrum or sample allele frequencies probabilities) is no longer supported.
+In case you do not have a reliable ancestral information, please use your reference sequence to polarise your data and follow all the steps as documented here.
+However, do not attempt to make any inference based on the resulting unfolded reference/non-reference based - site frequency spectrum.
+
+
+IMPORTANT NOTE iii):
+
+It may be practical to perform a non-stringent SNP calling before running the following analyses, in order to reduce the computational time and data dimensions.
+Moreover, this will reduce noise due to monomorphic sites, especially when the species' polymorphic rate is very low.
 
 
 ### Installation
@@ -36,7 +57,6 @@ To install these tools just run:
 
     % cd ngsPopGen
     % make
-    % make test
 
 Executables are built into the main directory. If you wish to clean all binaries and intermediate files:
 
@@ -47,53 +67,30 @@ Executables are built into the main directory. If you wish to clean all binaries
 ## ngsFST
 
 Program to estimate FST from NGS data. It computes expected genetic variance components and estimate per-site FST from those using methods-of-moments estimator. See Fumagalli et al. Genetics 2013 for more details.
-In input it receives posterior probabilities of sample allele frequencies for each population. It may receive also a 2D-SFS as a prior and in this case it receives as input posterior probabilities with uniform prior (ANGSD with -realSFS 1 only, and then set -islog 1). You can give also 2 marginal spectra as priors.
+In input it receives sample allele frequencies likelihoods for each population and a 2D-SFS as a prior.
 
 The output is a tab-separated text file. Each row represents a site. Columns are labelled: A, AB, f, FST, Pvar; where A is the expectation of genetic variance between populations, AB is the expectation of the total genetic variance, f is the correcting factor for the ratio of expectations, FST is the per-site FST value, Pvar is the probability for the site of being variable.
-
 
 ### Usage
 #### Examples:
 
- * using a 2D-SFS as a prior, estimated using ngs2dSFS (recommended if data is unfolded):
+ * using a 2D-SFS as a prior, estimated using ngs2dSFS:
 
 #
 
-    % ./ngsFST -postfiles pop1.sfs pop2.sfs -priorfile spectrum2D.txt -nind 20 20 -nsites 100000 -block_size 20000 -outfile pops.fst -islog 1
-
- * using marginal spectra as priors, estimated using optimSFS (ANGSD):
-
-#
-
-    % ./ngsFST -postfiles pop1.sfs pop2.sfs -priorfiles spectrum1.txt spectrum2.txt -nind 20 20 -nsites 100000 -block_size 20000 -outfile pops.fst -islog 1
-
- * instead of prior files, we can also directly provide the posterior probabilities:
-
-#
-
-    % ./ngsFST -postfiles pop1.sfs.ml.norm pop2.sfs.ml.norm -nind 20 20 -nsites 100000 -block_size 20000 -outfile pops.fst -islog 0
-
-* use posterior probabilities of allele frequencies from a uniform prior:
-
-#
-
-    % ./ngsFST -postfiles pop1.sfs pop2.sfs -nind 20 20 -nsites 100000 -block_size 20000 -outfile pops.fst -islog 1
+    % ./ngsFST -postfiles pop1.saf pop2.saf -priorfile spectrum2D.txt -nind 20 20 -nsites 100000 -block_size 20000 -outfile pops.fst -islog 1 -verbose 0
 
 #### Parameters:
 
-    -postfiles: files with posterior probabilities of sample allele frequencies (.sfs or .saf) for each population
+    -postfiles: files with sample allele frequencies likelihoods for each population
     -priorfile: 2D-SFS to be used as a prior; you can use ngs2dSfs with parameter -relative set to 1
-    -priorfiles: 2 marginal spectra to be used as priors
     -nind: number of individuals for each population
     -nsites: total number of sites; in case of a site subset this is the upper limit
     -firstbase: in case of a site subset, this is the lower limit
-    -isfold: boolean, is your data folded? You SHOULD not use this option! This will be deprecated soon.
-    -islog: boolean, are postfiles in -log?
+    -islog: boolean, are postfiles in -log? kept for compatibility but always set it to 1
     -outfile: name of the output file
-    -block_size: number of sites in each chunk (for memory reasons)
+    -block_size: number of sites in each chunk (for memory reasons, increase it if you can use more RAM)
     -verbose: level of verbosity
-
-NOTE: Currently, it is not possible to estimate a joint-SFS from folded data. Also, one should check whether each site has the same minor allele for both populations (hardly met for many cases), so `isfold` option will be removed soon for safety. Therefore, for _Fst_ estimation, a solution would be to use posterior probabilities of allele frequencies using the non-reference site frequency spectrum if the ancestral-derived polarization is not available.
 
 ---
 
@@ -105,23 +102,23 @@ Program to compute the expected correlation matrix between individuals from geno
 
 #### Examples:
 
-* not calling genotypes and weighting by each site's probability of being variable (recommended if no SNP calling is performed and coverage is low):
+* not calling genotypes and weighting by each site's probability of being variable (recommended if no SNP calling is performed and depth is extremely low, otherwise please use other methods below):
 
 #
 
     % ./ngsCovar -probfile pop.geno -outfile pop.covar -nind 40 -nsites 100000 -block_size 20000 -call 0 -norm 0 -sfsfile pop.sfs.ml.norm
     
-* not calling genotypes:
+* not calling genotypes but with SNP calling (preferred way under most circumstances):
+
+#
+
+    % ./ngsCovar -probfile pop.geno -outfile pop.covar -nind 40 -nsites 100000 -block_size 20000 -call 0 -minmaf 0.05
+    
+* calling genotypes (this is kept for compatibility but should not be used unless you have high-depth data, > 20X):
 
 #
 
     % ./ngsCovar -probfile pop.geno -outfile pop.covar -nind 40 -nsites 100000 -block_size 20000 -call 1
-    
-* calling genotypes and filtering out rare variants:
-
-#
-
-    % ./ngsCovar -probfile pop.geno -outfile pop.covar -nind 40 -nsites 100000 -block_size 20000 -call 1 -minmaf 0.05
 
 
 #### Parameters:
@@ -137,7 +134,6 @@ Program to compute the expected correlation matrix between individuals from geno
            2 [normalized by 2p(1-p)]
     -minmaf: ignore sites below this threshold of minor allele frequency
     -call: call genotypes based on the maximum posterior probability
-    -isfold: boolean, is your data folded?
     -islog: boolean, are postfiles in -log?
     -outfile: name of output file
     -block_size: number of sites in each chunk (for memory reasons)
@@ -151,11 +147,11 @@ Program to estimate 2D-SFS from posterior probabilities of sample allele frequen
 
 #### Example:
 
-    % ./ngs2dSFS -postfiles pop.sfs.ml.norm pop.sfs.ml.norm -outfile spectrum.txt -relative 1 -nind 20 20 -nsites 100000 -block_size 20000
+    % ./ngs2dSFS -postfiles pop.saf pop.saf -outfile spectrum.txt -relative 1 -nind 20 20 -nsites 100000 -block_size 20000
 
 #### Parameters:
 
-    -postfiles: file with sample allele frequency posterior probabilities for each population
+    -postfiles: file with sample allele frequency posterior probabilities (or likelihoods) for each population
     -nind: number of individuals
     -nsites: total number of sites; in case of a site subset this is the upper limit
     -offset: in case of a site subset, this is the lower limit
@@ -163,6 +159,11 @@ Program to estimate 2D-SFS from posterior probabilities of sample allele frequen
     -maxlike: compute the MLE as the sum across sites' joint allele frequency (1) or as the sum of the products of likelihoods (0)
     -relative: boolean, whether input are absolute counts of sites with a specific joint allele frequency (0) or relative frequencies (1)
     -block_size: memory efficiency, number of sites for each chunk
+
+IMPORTANT NOTE:
+
+ANGSD can compute a ML estimate of the 2D-SFS which should be preferred when many sites are available. However, ANGSD output file should be transformed (from log to un-log and from space-separated to tab-separated) before being used in ngsFST.
+
 
 ---
 
@@ -172,7 +173,7 @@ Program to compute estimates of the number of segregating sites, the expected av
 
 #### Example:
 
-* 2 populations, sliding windows of 100 sites (latter recommended only if no missing data is present):
+* 2 populations, sliding windows of 100 sites (latter recommended only if no missing data is present, however in most cases you will have some missing sites so this command should not be used):
 
 #
 
@@ -184,7 +185,7 @@ Program to compute estimates of the number of segregating sites, the expected av
 
     ./ngsStat -npop 1 -postfiles pop1.sfs.norm -nsites 1000 -iswin 1 -nind 10 -islog 0 -outfile pops.stat -isfold 0 -verbose 0 -block_size 100
     
-* 1 population, values estimated at each site (recommended in case of missing data):
+* 1 population, values estimated at each site (recommended in case of missing data, and then the computation of values in sliding windows will be performed using the R script provided):
 
 #
 
@@ -197,7 +198,6 @@ Program to compute estimates of the number of segregating sites, the expected av
     -nind: number of individuals
     -nsites: total number of sites; in case of a site subset this is the upper limit
     -firstbase: in case of a site subset, this is the lower limit
-    -isfold: boolean, is your data folded?
     -islog: boolean, are postfiles in -log?
     -iswin: if set to 1, chuncks are considered non-overlapping sliding-windows
     -outfile: name of output file
