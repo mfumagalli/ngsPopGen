@@ -203,3 +203,10 @@ Program to compute estimates of the number of segregating sites, the expected av
     -outfile: name of output file
     -block_size: number of sites in each chunk (for memory reasons)
     -verbose: level of verbosity
+
+
+Further examples can be found [here](https://github.com/mfumagalli/ngsPopGen/tree/master/examples).
+
+
+
+
