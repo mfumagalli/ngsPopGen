@@ -36,7 +36,7 @@ int main (int argc, char *argv[]) {
   int firstbase = 1;
   int relative = 1;
   int maxlike=1;
-  int islog=0;
+  int islog=1;
   int folded=0; // is data folded?
 
   // READ AND ASSIGN INPUT PARAMETERS
