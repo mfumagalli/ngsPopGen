@@ -27,7 +27,7 @@ int main (int argc, char *argv[]) {
   char *outfile=NULL;
   char *foutpost=NULL;
 
-  int argPos = 1, increment = 0, npop = 1, nind1 = 0, nind2 = 0, nsites = 0, verbose = 0, block_size = 0, isfold=0, firstbase=1, iswin = 0, islog = 0;
+  int argPos = 1, increment = 0, npop = 1, nind1 = 0, nind2 = 0, nsites = 0, verbose = 0, block_size = 20000, isfold=0, firstbase=1, iswin = 0, islog = 1;
 
   // if iswin==1 then block_size is the window size and print the valeus for each window
   // if iswin==0 then block_size is just for efficiency and print values for each site

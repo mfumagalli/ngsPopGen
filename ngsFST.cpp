@@ -102,7 +102,7 @@ int main (int argc, char *argv[]) {
 
   /// OUTPUT
   foutpost = append(outfile, "");
-  fprintf(stderr,"\t->Dumping file: %s\n", foutpost);
+  if (verbose==1) fprintf(stderr,"\t->Dumping file: %s\n", foutpost);
   outpost = getFILE(foutpost, "w");
   
   // print input arguments

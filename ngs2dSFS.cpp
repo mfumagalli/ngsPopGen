@@ -119,7 +119,7 @@ int main (int argc, char *argv[]) {
   // for each block
   for (int n=0; n<nwin; n++) {
       
-    fprintf(stderr, "win %d out of %d from %d to %d\n", n, (nwin-1), start.data[n], end.data[n]);
+    // fprintf(stderr, "win %d out of %d from %d to %d\n", n, (nwin-1), start.data[n], end.data[n]);
     post1 = readFileSub(sfsfile1, nind1, start.data[n], end.data[n], folded);
     post2 = readFileSub(sfsfile2, nind2, start.data[n], end.data[n], folded);
   

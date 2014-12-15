@@ -29,7 +29,7 @@ int main (int argc, char *argv[]) {
   char *outfiles=NULL;
   char *foutest=NULL;
   
-  int argPos = 1, increment = 0, nind = 0, nsites = 0, debug = 0, block_size = 0, call=0, offset=1, maxgeno=0, isfold=0, norm=0, islog=0;
+  int argPos = 1, increment = 0, nind = 0, nsites = 0, debug = 0, block_size = 20000, call=0, offset=1, maxgeno=0, isfold=0, norm=0, islog=0;
   double esites = 0.0, minmaf = 0.0;
  
   /// READ AND ASSIGN INPUT PARAMETERS
@@ -101,7 +101,7 @@ int main (int argc, char *argv[]) {
   foutest = append(outfiles, "");
   
   // print input arguments
-  fprintf(stderr,"\t->Using args: -nind %d -nsites %d -probfile %s -sfsfile %s -outfile %s -verbose %d -minmaf %f -block_size %d -call %d -offset %d\n", nind, nsites, estfile, sfsfile, foutest, debug, minmaf, block_size, call, offset); 
+  if (debug) fprintf(stderr,"\t->Using args: -nind %d -nsites %d -probfile %s -sfsfile %s -outfile %s -verbose %d -minmaf %f -block_size %d -call %d -offset %d\n", nind, nsites, estfile, sfsfile, foutest, debug, minmaf, block_size, call, offset); 
  
   // BLOCKS
   /// GET POSITIONS OF BLOCKS
@@ -114,7 +114,7 @@ int main (int argc, char *argv[]) {
   if ( ( (nsites-offset+1) % block_size)!=0) nwin++;
 
   // prepare out
-  fprintf(stderr,"\t->Dumping file: %s\n", foutest);
+  if (debug) fprintf(stderr,"\t->Dumping file: %s\n", foutest);
   outest = getFILE(foutest, "w");
 
   // initialize covariance matrix  
@@ -159,7 +159,7 @@ int main (int argc, char *argv[]) {
     matrix<double> esti;
     array<double> pp;
 
-    fprintf(stderr, "\nBlock %d out of %d from %d to %d\n", n, (nwin-1), start.data[n], end.data[n]);
+    if (debug) fprintf(stderr, "\nBlock %d out of %d from %d to %d\n", n, (nwin-1), start.data[n], end.data[n]);
 
     // compute esti
     if (debug==1) fprintf(stderr, "\nGetting esti...");
@@ -207,7 +207,7 @@ int main (int argc, char *argv[]) {
     if (debug==1) fprintf(stderr, "\nUpdating covar...");
     if (sfsfile!=NULL) {
       // read sfs
-      fprintf(stderr, "...weighting...");
+      if (debug) fprintf(stderr, "...weighting...");
       sfs = readFileSub(sfsfile, nind, start.data[n], end.data[n], isfold);
       if (islog==0) normSFS(sfs, 1);
       if (debug==1) fprintf(stderr, "\nGot  sfs: %d %d, e.g. %f %f", sfs.x, sfs.y, sfs.data[0][0], sfs.data[1][1]);
@@ -223,7 +223,7 @@ int main (int argc, char *argv[]) {
       if (debug==1) fprintf(stderr, ": %f", esites);
     } else {
       if (debug==1) fprintf(stderr, "\n I am using this minmaf %f ", minmaf);
-      fprintf(stderr, "...no weighting..."); 
+      if (debug) fprintf(stderr, "...no weighting..."); 
       double tmp_eff_nsites=calcCovarUp(esti, pp, covar, minmaf, good, start.data[n], norm);
       esites=esites+tmp_eff_nsites;
     }
@@ -240,7 +240,7 @@ int main (int argc, char *argv[]) {
         temp_sum=temp_sum+covar.data[i][j];
        }
       }
-      fprintf(stderr, "\t Sum:%f", temp_sum);
+      if (debug) fprintf(stderr, "\t Sum:%f", temp_sum);
 
       //if (temp_sum==(-nan)) {
       //  for (int i=0; i<pvar.x; i++) fprintf(stderr, "\t %d %f", i, pvar.data[i]);
@@ -251,7 +251,7 @@ int main (int argc, char *argv[]) {
 
   } // end for n in nwin block
 
-  fprintf(stderr, "\n(Exp/eff) nr sites: %f\n", esites);
+  if (debug) fprintf(stderr, "\n(Exp/eff) nr sites: %f\n", esites);
 
   delete [] pvar.data;
 
