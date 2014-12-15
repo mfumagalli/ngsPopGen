@@ -39,7 +39,7 @@ int main (int argc, char *argv[]) {
   char *outfile=NULL;
   char *foutpost=NULL;
   
-  int argPos = 1, increment = 0, nind = 0, nind1 = 0, nind2 = 0, nsites = 0, verbose = 0, nsums = 1, block_size = 0, isfold=0, firstbase=1, islog=0;
+  int argPos = 1, increment = 0, nind = 0, nind1 = 0, nind2 = 0, nsites = 0, verbose = 0, nsums = 1, block_size = 20000, isfold=0, firstbase=1, islog=1;
 
   /// READ AND ASSIGN INPUT PARAMETERS
   
