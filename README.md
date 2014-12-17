@@ -11,27 +11,7 @@ IMPORTANT NOTE i):
 
 In all analisis involving 2 populations, input data must refer to the exact same sites. If they differ (e.g. because of different filtering), you must first get the overlapping subset of sites for both populations.
 
-To achieve this, you can follow instructions given ([here](http://popgen.dk/angsd/index.php/2d_SFS_Estimation)):
-
-    gunzip -c pop1.saf.pos.gz pop2.saf.pos.gz | sort  -S 50% | uniq -d | sort -k1,1 -S 50% > intersect.txt
-
-and then you recreate your files using ANGSD adding the filtering `-sites intersect.txt`, for instance:
-
-    angsd -GL 1 -b pop1.list -anc anc.fa -r chr1: -P 10 -out pop1 -sites intersect.txt -doSaf 1
-    angsd -GL 1 -b pop2.list -anc anc.fa -r chr1: -P 10 -out pop2 -sites intersect.txt -doSaf 1
-
-Alternatively (but this may require a lot of memory for big datasets), you can get the overlapping sites with (using ANGSD +0.579):
-
-    gunzip -c file1.saf.pos.gz > A.saf.pos
-    gunzip -c file2.saf.pos.gz > B.saf.pos
-    awk 'FNR==NR {x[$1"_"$2]=NR; next} x[$1"_"$2] {print x[$1"_"$2]; print FNR > "/dev/stderr"}' A.saf.pos B.saf.pos >A.pos 2>B.pos
-    rm A.saf.pos B.saf.pos
-
-and then use `GetSubSfs` ([ngsUtils](https://github.com/mfumagalli/ngsUtils)) as:
-
-    ./ngsTools/ngsUtils/GetSubSfs -infile file1.sin.saf -posfile A.pos -nind 7 -nsites 733744 -len 717017 -outfile file1.sin.fix.saf
-    
-and so on for the second file.
+To achieve this, you can follow instructions given in the tutorial ([here](https://github.com/mfumagalli/ngsTools/blob/master/TUTORIAL.md)).
 
 A quick trick to check that everything went fine is to retrieve the dimension of each file (using "ls -l"), then divide this number by 8 and then by the double of the number of individuals plus 1. You should get the final number of sites.
 
