@@ -49,7 +49,7 @@ Executables are built into the main directory. If you wish to clean all binaries
 Program to estimate FST from NGS data. It computes expected genetic variance components and estimate per-site FST from those using methods-of-moments estimator. See Fumagalli et al. Genetics 2013 for more details.
 In input it receives sample allele frequencies likelihoods for each population and a 2D-SFS as a prior.
 
-The output is a tab-separated text file. Each row represents a site. Columns are labelled: A, AB, f, FST, Pvar; where A is the expectation of genetic variance between populations, AB is the expectation of the total genetic variance, f is the correcting factor for the ratio of expectations, FST is the per-site FST value, Pvar is the probability for the site of being variable.
+The output is a tab-separated text file. Each row represents a site. Columns are ordered as: A, AB, f, FST, Pvar; where A is the expectation of genetic variance between populations, AB is the expectation of the total genetic variance, f is the correcting factor for the ratio of expectations, FST is the per-site FST value, Pvar is the probability for the site of being variable.
 
 ### Usage
 #### Examples:
@@ -58,7 +58,7 @@ The output is a tab-separated text file. Each row represents a site. Columns are
 
 #
 
-    % ./ngsFST -postfiles pop1.saf pop2.saf -priorfile spectrum2D.txt -nind 20 20 -nsites 100000 -block_size 20000 -outfile pops.fst -islog 1 -verbose 0
+    % ./ngsFST -postfiles pop1.saf pop2.saf -priorfile spectrum2D.txt -nind 20 20 -nsites 100000 -outfile pops.fst -verbose 0
 
 #### Parameters:
 
@@ -127,7 +127,7 @@ Program to estimate 2D-SFS from posterior probabilities of sample allele frequen
 
 #### Example:
 
-    % ./ngs2dSFS -postfiles pop.saf pop.saf -outfile spectrum.txt -relative 1 -nind 20 20 -nsites 100000 -block_size 20000
+    % ./ngs2dSFS -postfiles pop.saf pop.saf -outfile spectrum.txt -relative 1 -nind 20 20 -nsites 100000
 
 #### Parameters:
 
@@ -136,11 +136,9 @@ Program to estimate 2D-SFS from posterior probabilities of sample allele frequen
     -nsites: total number of sites; in case of a site subset this is the upper limit
     -offset: in case of a site subset, this is the lower limit
     -outfile: name of output file
-    -maxlike: compute the MLE as the sum across sites' joint allele frequency (1) or as the sum of the products of likelihoods (0)
+    -maxlike: compute the MLE as the sum across sites' joint allele frequency (1, preferred) or as the sum of the products of likelihoods (0)
     -relative: boolean, whether input are absolute counts of sites with a specific joint allele frequency (0) or relative frequencies (1)
     -block_size: memory efficiency, number of sites for each chunk
-
-IMPORTANT NOTE:
 
 ANGSD can compute a ML estimate of the 2D-SFS which should be preferred when many sites are available. However, ANGSD output file should be transformed (from log to un-log and from space-separated to tab-separated) before being used in ngsFST.
 
@@ -157,19 +155,19 @@ Program to compute estimates of the number of segregating sites, the expected av
 
 #
 
-    ./ngsStat -npop 2 -postfiles pop1.sfs.norm pop2.sfs.norm -nsites 1000 -iswin 1 -nind 10 50 -islog 0 -outfile pops.stat -isfold 0 -verbose 0 -block_size 100
+    ./ngsStat -npop 2 -postfiles pop1.saf pop2.saf -nsites 1000 -iswin 1 -nind 10 10 -outfile pops.stat -verbose 0 -block_size 100
     
-* 1 populations, sliding windows of 100 sites (latter recommended only if no missing data is present):
+* 1 populations, sliding windows of 100 sites (latter recommended only if no missing data is present, so again in many cases this should not be used):
 
 # 
 
-    ./ngsStat -npop 1 -postfiles pop1.sfs.norm -nsites 1000 -iswin 1 -nind 10 -islog 0 -outfile pops.stat -isfold 0 -verbose 0 -block_size 100
+    ./ngsStat -npop 1 -postfiles pop1.saf -nsites 1000 -iswin 1 -nind 10 -outfile pops.stat -block_size 100
     
 * 1 population, values estimated at each site (recommended in case of missing data, and then the computation of values in sliding windows will be performed using the R script provided):
 
 #
 
-    ./ngsStat -npop 1 -postfiles pop1.sfs.norm -nsites 1000 -iswin 0 -nind 10 -islog 0 -outfile pops.stat -isfold 0 -verbose 0
+    ./ngsStat -npop 1 -postfiles pop1.saf -nsites 1000 -iswin 0 -nind 10 -outfile pops.stat
 
 #### Parameters:
 
@@ -178,7 +176,7 @@ Program to compute estimates of the number of segregating sites, the expected av
     -nind: number of individuals
     -nsites: total number of sites; in case of a site subset this is the upper limit
     -firstbase: in case of a site subset, this is the lower limit
-    -islog: boolean, are postfiles in -log?
+    -islog: boolean, are postfiles in -log? keep 1
     -iswin: if set to 1, chuncks are considered non-overlapping sliding-windows
     -outfile: name of output file
     -block_size: number of sites in each chunk (for memory reasons)
