@@ -15,10 +15,10 @@ opt <- parse_args(OptionParser(option_list = option_list))
 #################################################################################
 
 # Read input file
-covar <- read.table(opt$in_file, stringsAsFact=F);
+covar <- read.table(opt$in_file, stringsAsFact=FALSE);
 
 # Read annot file
-annot <- read.table(opt$annot_file, sep=" ", header=T); # note that plink cluster files are usually tab-separated instead
+annot <- read.table(opt$annot_file, sep="\t", header=TRUE); # note that plink cluster files are usually tab-separated instead
 
 # Parse components to analyze
 comp <- as.numeric(strsplit(opt$comp, "-", fixed=TRUE)[[1]])

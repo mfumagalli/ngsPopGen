@@ -29,7 +29,7 @@ gunzip -f testA.geno.gz
 ../ngsCovar -probfile testA.geno -outfile testA.covar3 -nind 24 -nsites 10000 -call 1 -minmaf 0.05
 
 # Plot results
-#Rscript --vanilla --slave -e 'write.table(cbind(seq(1,24),rep(1,24),c(rep("A",10),rep("B",8),rep("C",6))), row.names=F, sep=" ", col.names=c("FID","IID","CLUSTER"), file="testA.clst", quote=F)'
+#Rscript --vanilla --slave -e 'write.table(cbind(seq(1,24),rep(1,24),c(rep("A",10),rep("B",8),rep("C",6))), row.names=F, sep="\t", col.names=c("FID","IID","CLUSTER"), file="testA.clst", quote=F)'
 #Rscript --vanilla --slave $SCRIPTS/plotPCA.R -i testA.covar1 -c 1-2 -a testA.clst -o testA.pca.SAF.pdf
 #Rscript --vanilla --slave $SCRIPTS/plotPCA.R -i testA.covar2 -c 1-2 -a testA.clst -o testA.pca.MAF.pdf
 #Rscript --vanilla --slave $SCRIPTS/plotPCA.R -i testA.covar3 -c 1-2 -a testA.clst -o testA.pca.MAFcall.pdf
