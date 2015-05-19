@@ -73,7 +73,7 @@ int main (int argc, char *argv[]) {
   } // end while all inputs
   
   // check if there is the input file
-  if ((estfile == NULL)) {
+  if (estfile == NULL) {
     fprintf(stderr,"\nMust supply -probfile.\n");
     info();
     return 0;
@@ -87,7 +87,7 @@ int main (int argc, char *argv[]) {
   }
   
   // check if there is the output file
-  if(outfiles == NULL) {
+  if (outfiles == NULL) {
     fprintf(stderr,"\nMust supply -outfile.\n");
     info();
     return 0;
@@ -96,6 +96,12 @@ int main (int argc, char *argv[]) {
   // if block_size longer than nsites
   if (block_size>(nsites-offset+1)) block_size=(nsites-offset+1);
   if (block_size==0) block_size=nsites-offset+1;
+
+  // When reading from stdin, reading in blocks is not supported
+  if ( (strcmp(estfile,"-")==0 || (sfsfile!=NULL && strcmp(sfsfile,"-")==0)) && block_size != nsites ) {
+    fprintf(stderr,"\nInput in blocks is not supported when using piped input (either -postfile or -sfsfile).\n");
+    exit(-1);
+  }
 
   // prepare output files
   foutest = append(outfiles, "");

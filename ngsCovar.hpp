@@ -1,6 +1,8 @@
 /// TEMPLATES
 
 #include <string> //for str operations
+#include <unistd.h>
+
 using namespace std;
 
 // a general matrix style structure
@@ -105,20 +107,35 @@ int fexists(const char* str) {
 }
 
 // a nice wrapper for getting files
-FILE *getFILE(const char*fname,const char* mode) {
+FILE *getFILE(const char* fname,const char* mode) {
+  FILE *fp;
   int writeFile = 0;
   for(size_t i=0;i<strlen(mode);i++)
     if(mode[i]=='w')
       writeFile = 1;
-  if(writeFile&&fexists(fname)){
+
+  if(writeFile && fexists(fname)){
     fprintf(stderr,"\t-> File exists: %s exiting...\n",fname);
     exit(0);
   }
-  FILE *fp;
-  if(NULL==(fp=fopen(fname,mode))){
-    fprintf(stderr,"\t->Error opening FILE handle for file:%s exiting\n",fname);
+  
+  if(strcmp(fname, "-") == 0){
+    if(writeFile)
+      fp = stdout;
+    else
+      fp = stdin;
+  } else {
+    if(NULL==(fp=fopen(fname,mode))){
+      fprintf(stderr,"\t->Error opening FILE handle for file:%s exiting\n",fname);
+      exit(0);
+    }
+  }
+
+  if(isatty(fileno(fp))) {
+    fprintf(stderr, "Your stdin/stdout is not a pipe, this might not be what you want!\n");
     exit(0);
   }
+  
   return fp;
 }
 
@@ -126,23 +143,26 @@ FILE *getFILE(const char*fname,const char* mode) {
 matrix<double> readFileSub(char *fname, int nInd, int start, int end, int isfold) {
   FILE *fp = getFILE(fname,"r");
   size_t filesize =fsize(fname);
-  if (isfold==0) {
-    if((filesize %(sizeof(double)*(2*nInd+1)) )) {
-      fprintf(stderr,"\n\t-> Possible error,binaryfiles might be broken\n");
-      exit(-1);
+  if( strcmp(fname,"-")!=0 ) {
+    if (isfold==0) {
+      if( (filesize %(sizeof(double)*(2*nInd+1))) ) {
+	fprintf(stderr,"\n\t-> Possible error reading SFS, binary file might be broken...\n");
+	exit(-1);
+      }
+    } else {
+      if( (filesize %(sizeof(double)*(nInd+1))) ) {
+	fprintf(stderr,"\n\t-> Possible error reading SFS, binary file might be broken...\n");
+	exit(-1);
+      }
     }
-  } else {
-    if((filesize %(sizeof(double)*(nInd+1)) )) {
-      fprintf(stderr,"\n\t-> Possible error,binaryfiles might be broken\n");
-      exit(-1);
-    }	  
   }
+
   int nsites = end-start+1;  
   double **data = new double*[nsites];
   if (isfold) {
-	  fseek(fp, sizeof(double)*(nInd+1)*start, SEEK_SET);
+    fseek(fp, sizeof(double)*(nInd+1)*start, SEEK_SET);
   } else {
-	  fseek(fp, sizeof(double)*(2*nInd+1)*start, SEEK_SET);
+    fseek(fp, sizeof(double)*(2*nInd+1)*start, SEEK_SET);
   }
   if (isfold) {
     for(int i=0; i<nsites; i++) {
@@ -173,8 +193,8 @@ matrix<double> readFileSub(char *fname, int nInd, int start, int end, int isfold
 matrix<double> readEstiSub(char *fname, int nInd, int start, int end) {
   FILE *fp = getFILE(fname,"rb");
   size_t filesize =fsize(fname);
-  if((filesize %(sizeof(double)*(3*nInd)) )) {
-    fprintf(stderr,"\n\t-> Possible error,binaryfiles might be broken\n");
+  if( strcmp(fname,"-")!=0 && (filesize %(sizeof(double)*3*nInd)) ) {
+    fprintf(stderr,"\n\t-> Possible error read GENO, binary file might be broken...\n");
     exit(-1);
   }
   int nsites = end-start+1;
@@ -198,7 +218,7 @@ array<int> readGenoQuality(const char *fname, int nsites) {
   // nsites is how many sites you want
   FILE *fp = getFILE(fname,"r");
   size_t filesize =fsize(fname);
-  if(filesize==0){
+  if( strcmp(fname,"-")!=0 && filesize==0){
     fprintf(stderr,"file:%s looks empty\n",fname);
     exit(0);
   }
