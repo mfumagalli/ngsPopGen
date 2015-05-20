@@ -71,6 +71,10 @@ int main (int argc, char *argv[]) {
     }
     argPos = argPos + 2 + increment;
   } // end while all inputs
+
+
+  // print input arguments
+  if (debug) fprintf(stderr,"\t->Using args: -nind %d -nsites %d -probfile %s -sfsfile %s -outfile %s -verbose %d -minmaf %f -block_size %d -call %d -offset %d\n", nind, nsites, estfile, sfsfile, foutest, debug, minmaf, block_size, call, offset); 
   
   // check if there is the input file
   if (estfile == NULL) {
@@ -106,8 +110,6 @@ int main (int argc, char *argv[]) {
   // prepare output files
   foutest = append(outfiles, "");
   
-  // print input arguments
-  if (debug) fprintf(stderr,"\t->Using args: -nind %d -nsites %d -probfile %s -sfsfile %s -outfile %s -verbose %d -minmaf %f -block_size %d -call %d -offset %d\n", nind, nsites, estfile, sfsfile, foutest, debug, minmaf, block_size, call, offset); 
  
   // BLOCKS
   /// GET POSITIONS OF BLOCKS
