@@ -2,6 +2,8 @@
 A short tutorial on using ngsTools from BAM files can be found [here](https://github.com/mfumagalli/ngsTools/blob/master/TUTORIAL.md)).
 In most cases, it will contain all the information you need.
 
+The following examples are based on a previous version of ANGSD. The pipeline is the same but some programs might have changed name or the output file may differ. We are working on a general update. In the meantime, please refer to the tutorial which should contain the most updated informaton.
+
 # Posterior probabilities of genotypes and sample allele frequencies
 We use ANGSD to compute genotype posterior probabilities:
 
