@@ -10,17 +10,14 @@ Several tools to perform population genetic analyses from NGS data:
 IMPORTANT NOTE i): 
 
 In all analisis involving 2 populations, input data must refer to the exact same sites. If they differ (e.g. because of different filtering), you must first get the overlapping subset of sites for both populations.
-
 To achieve this, you can follow instructions given in the tutorial ([here](https://github.com/mfumagalli/ngsTools/blob/master/TUTORIAL.md)).
-
 A quick trick to check that everything went fine is to retrieve the dimension of each file (using "ls -l"), then divide this number by 8 and then by the double of the number of individuals plus 1. You should get the final number of sites.
 
 
 IMPORTANT NOTE ii): 
 
 The use of folded data (spectrum or sample allele frequencies probabilities) is no longer supported.
-In case you do not have a reliable ancestral information, please use your reference sequence to polarise your data and follow all the steps as documented here.
-However, do not attempt to make any inference based on the resulting unfolded reference/non-reference based - site frequency spectrum.
+In case you do not have a reliable ancestral information, please use your reference sequence to polarise your data and follow all the steps as documented here. However, do not attempt to make any inference based on the resulting unfolded reference/non-reference based - site frequency spectrum.
 
 
 IMPORTANT NOTE iii):
@@ -41,6 +38,9 @@ To install these tools just run:
 Executables are built into the main directory. If you wish to clean all binaries and intermediate files:
 
     % make clean
+
+However, we recommend to download and install the whole [ngsTools](https://github.com/mfumagalli/ngsTools) package.
+
 
 ---
 
