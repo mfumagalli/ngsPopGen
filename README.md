@@ -65,7 +65,6 @@ The output is a tab-separated text file. Each row represents a site. Columns are
     -nind: number of individuals for each population
     -nsites: total number of sites; in case of a site subset this is the upper limit
     -firstbase: in case of a site subset, this is the lower limit
-    -islog: boolean, are postfiles in -log? kept for compatibility but always set it to 1
     -outfile: name of the output file
     -block_size: number of sites in each chunk (for memory reasons, increase it if you can use more RAM)
     -verbose: level of verbosity
