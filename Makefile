@@ -13,4 +13,4 @@ test:
 	@cd examples/; bash test.sh 2> test.log; cd ../
 
 clean:
-	@rm -rf ngsFST ngsCovar ngs2dSFS ngsStat *.o examples/testA*
+	@rm -rf $(TOOLS) *.o examples/testA*
