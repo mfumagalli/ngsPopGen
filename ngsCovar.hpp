@@ -143,48 +143,36 @@ FILE *getFILE(const char* fname,const char* mode) {
 matrix<double> readFileSub(char *fname, int nInd, int start, int end, int isfold) {
   FILE *fp = getFILE(fname,"r");
   size_t filesize =fsize(fname);
+  int n_categ = (isfold ? nInd+1 : 2*nInd+1);
+
   if( strcmp(fname,"-")!=0 ) {
-    if (isfold==0) {
-      if( (filesize %(sizeof(double)*(2*nInd+1))) ) {
-	fprintf(stderr,"\n\t-> Possible error reading SFS, binary file might be broken...\n");
-	exit(-1);
-      }
-    } else {
-      if( (filesize %(sizeof(double)*(nInd+1))) ) {
-	fprintf(stderr,"\n\t-> Possible error reading SFS, binary file might be broken...\n");
-	exit(-1);
-      }
+    if( filesize % (n_categ*sizeof(float)) != 2*sizeof(float) ) {
+      fprintf(stderr,"\n\t-> Possible error reading SFS, binary file might be broken...\n");
+      exit(-1);
     }
   }
 
-  int nsites = end-start+1;  
+  int nsites = end-start+1;
   double **data = new double*[nsites];
-  if (isfold) {
-    fseek(fp, sizeof(double)*(nInd+1)*start, SEEK_SET);
-  } else {
-    fseek(fp, sizeof(double)*(2*nInd+1)*start, SEEK_SET);
-  }
-  if (isfold) {
-    for(int i=0; i<nsites; i++) {
-      double *tmp = new double[nInd+1];
-      fread(tmp,sizeof(double),nInd+1,fp);
-      data[i]= tmp;
+  float float_tmp = 0;
+
+  // Locate data to read
+  fseek(fp, (2+n_categ*start)*sizeof(float), SEEK_SET);
+
+  // Read data
+  for(int i=0; i<nsites; i++) {
+    double *tmp = new double[n_categ];
+    for(int c=0; c<n_categ; c++){
+      fread(&float_tmp, sizeof(float), 1, fp);
+      tmp[c] = (double) float_tmp;
     }
-  } else {
-    for(int i=0; i<nsites; i++) {
-      double *tmp = new double[2*nInd+1];
-      fread(tmp,sizeof(double),2*nInd+1,fp);
-      data[i]= tmp;
-    }
+    data[i] = tmp;
   }
+
   fclose(fp);
   matrix<double> ret;
   ret.x = nsites;
-  if (isfold) {
-    ret.y = nInd+1;
-  } else {
-    ret.y = 2*nInd+1;
-  }
+  ret.y = n_categ;
   ret.data = data;
   return ret;
 }
@@ -259,17 +247,17 @@ void normSFS(matrix<double> &sfs, int islog) {
     somma = 0;
     for(int i=0; i<ncol; i++) {
       if (islog) {
-        somma = somma + exp(sfs.data[j][i]);
+	somma = somma + exp(sfs.data[j][i]);
         } else {
-        somma = somma + sfs.data[j][i];
+	somma = somma + sfs.data[j][i];
       }
     }
     // divide each value for the sum
     for(int i=0; i<ncol; i++) {
       if (islog) {
-        sfs.data[j][i] = exp(sfs.data[j][i]) / somma;
+	sfs.data[j][i] = exp(sfs.data[j][i]) / somma;
       } else {
-        sfs.data[j][i] = sfs.data[j][i] / somma;
+	sfs.data[j][i] = sfs.data[j][i] / somma;
       }
     }
    }
@@ -331,7 +319,7 @@ char *append(const char* a,const char *b){
 
 // print help
 void info() {
-  fprintf(stdout, "\nInput:\n-probfile: file with genotype posterior probabilities [required]\n-outfile: name of output file [required], currently it is a text file, tab separated with n*n cells\n-sfsfile: file with SFS posterior probabilities [required if you want to weight each site by its probability of being variable]\n-nind: nr of individuals [required]\n-nsites: nr of sites [required]\n-norm: if 0 no normalization, if 1 matrix is normalized by (p(1-p)) as in Patterson et al 2006, if 2 normalization is 2p(1-p) [0]\n-verbose: level of verbosity [0]\n-block_size: how many sites per block when reading the input file [0]\n-call: whether calling genotypes (1) or not (0) [0]\n-offset: starting position of subset analysis [1]\n-minmaf: filter out sites with estimated MAF less than minmaf or greater than 1-minmaf [0] (this filtering will be ignored when using the weighting approach\n-genoquality: text file with nsites lines; each line has a 0 and 1; if 0 the program will ignore this site [NULL]\n-isfold: whether data in -sfsfile is folded [0]\n-islog: whether data in -sfsfile is in log values [0]\n\n");
+  fprintf(stdout, "\nInput:\n-probfile: file with genotype posterior probabilities [required]\n-outfile: name of output file [required], currently it is a text file, tab separated with n*n cells\n-sfsfile: file with SFS posterior probabilities [required if you want to weight each site by its probability of being variable]\n-nind: nr of individuals [required]\n-nsites: nr of sites [required]\n-norm: if 0 no normalization, if 1 matrix is normalized by (p(1-p)) as in Patterson et al 2006, if 2 normalization is 2p(1-p) [0]\n-verbose: level of verbosity [0]\n-block_size: how many sites per block when reading the input file [0]\n-call: whether calling genotypes (1) or not (0) [0]\n-offset: starting position of subset analysis [1]\n-minmaf: filter out sites with estimated MAF less than minmaf or greater than 1-minmaf [0] (this filtering will be ignored when using the weighting approach\n-genoquality: text file with nsites lines; each line has a 0 and 1; if 0 the program will ignore this site [NULL]\n\n");
 }
 
 // compute estimated allele frequencies from genotype posterior probabilities
@@ -392,7 +380,7 @@ double calcCovarUp (matrix<double> &m, array<double> a, matrix<double> &covar, d
     }
     data[i] = tmp;
   }
-  fprintf(stderr, "\n nsites is %d but effective is %f", nsites, eff_nsites);
+  fprintf(stderr, "nsites is %d but effective is %f\n", nsites, eff_nsites);
   matrix<double> ret;
   ret.x = nind;
   ret.y = nind;
