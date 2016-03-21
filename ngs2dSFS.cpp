@@ -16,7 +16,7 @@
 int main (int argc, char *argv[]) {
   
   if (argc==1) {
-    fprintf(stdout, "\nInput:\n-postfiles: file with sample allele frequency posterior probabilities for each population\n-outfile: name of output file\n-nind: number of individuals per population\n    -nsites: number of sites, or upper limit in case of analyzing a subset\n-block_size: memory efficiency, number of sites for each chunk\n-offset: lower limit in case of analyzing a subset\n-maxlike: if 1 compute the most likely joint allele frequency and sum across sites, if 0 it computes the sum of the products of likelihoods\n-relative: boolean, if 1 number are relative frequencies from 0 to 1 which sum up 1; if 0 numbers are absolute counts of sites having a specific joint allele frequency\n-offset: lower limit of sites in case you want to analyze a subset\n-isfold: is data folded?\n-islog: is data in log values?\n\n");
+    fprintf(stdout, "\nInput:\n-postfiles: file with sample allele frequency posterior probabilities for each population\n-outfile: name of output file\n-nind: number of individuals per population\n    -nsites: number of sites, or upper limit in case of analyzing a subset\n-block_size: memory efficiency, number of sites for each chunk\n-offset: lower limit in case of analyzing a subset\n-maxlike: if 1 compute the most likely joint allele frequency and sum across sites, if 0 it computes the sum of the products of likelihoods\n-relative: boolean, if 1 number are relative frequencies from 0 to 1 which sum up 1; if 0 numbers are absolute counts of sites having a specific joint allele frequency\n-offset: lower limit of sites in case you want to analyze a subset\n\n");
     return 0;
   }
 
@@ -36,8 +36,6 @@ int main (int argc, char *argv[]) {
   int firstbase = 1;
   int relative = 1;
   int maxlike=1;
-  int islog=1;
-  int folded=0; // is data folded?
 
   // READ AND ASSIGN INPUT PARAMETERS
   
@@ -59,8 +57,6 @@ int main (int argc, char *argv[]) {
     else if(strcmp(argv[argPos],"-offset")==0) firstbase = atoi(argv[argPos+1]); 
     else if(strcmp(argv[argPos],"-maxlike")==0) maxlike = atoi(argv[argPos+1]);
     else if(strcmp(argv[argPos],"-relative")==0) relative = atoi(argv[argPos+1]);
-    else if(strcmp(argv[argPos],"-isfold")==0) folded = atoi(argv[argPos+1]);
-    else if(strcmp(argv[argPos],"-islog")==0) islog = atoi(argv[argPos+1]);
     else {
       printf("\tUnknown arguments: %s\n",argv[argPos]);
       return 0;
@@ -87,7 +83,7 @@ int main (int argc, char *argv[]) {
 
   // output
   matrix<double> spec;
-  spec.x=(2*nind1)+1; // note that dimensions are the same even for the folded spectrum; then after I will properly fold it
+  spec.x=(2*nind1)+1;
   spec.y=(2*nind2)+1;
 
   double **data = new double*[spec.x];
@@ -120,13 +116,11 @@ int main (int argc, char *argv[]) {
   for (int n=0; n<nwin; n++) {
       
     // fprintf(stderr, "win %d out of %d from %d to %d\n", n, (nwin-1), start.data[n], end.data[n]);
-    post1 = readFileSub(sfsfile1, nind1, start.data[n], end.data[n], folded);
-    post2 = readFileSub(sfsfile2, nind2, start.data[n], end.data[n], folded);
-  
-    if (islog) {
-      normSFS(post1, islog);
-      normSFS(post2, islog);
-    }
+    post1 = readFileSub(sfsfile1, nind1, start.data[n], end.data[n]);
+    post2 = readFileSub(sfsfile2, nind2, start.data[n], end.data[n]);
+    // Normalize SFS
+    normSFS(post1);
+    normSFS(post2);
 
     // COMPUTE SFS
     sumSpectrum(spec, post1, post2, maxlike);

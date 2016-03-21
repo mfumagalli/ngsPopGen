@@ -129,10 +129,10 @@ FILE *getFILE(const char*fname,const char* mode) {
 }
 
 // read a file into a matrix but only for a specific subsets of positions (0-based notation)
-matrix<double> readFileSub(char *fname, int nInd, int start, int end, int isfold) {
+matrix<double> readFileSub(char *fname, int nInd, int start, int end) {
   FILE *fp = getFILE(fname,"r");
   size_t filesize =fsize(fname);
-  int n_categ = (isfold ? nInd+1 : 2*nInd+1);
+  int n_categ = 2*nInd+1;
 
   if( strcmp(fname,"-")!=0 ) {
     if( filesize % (n_categ*sizeof(float)) != 2*sizeof(float) ) {
@@ -167,29 +167,19 @@ matrix<double> readFileSub(char *fname, int nInd, int start, int end, int isfold
 }
 
 // normalize SFS and exp it if log (if from -realSFS 1)
-void normSFS(matrix<double> &sfs, int islog) {
+void normSFS(matrix<double> &sfs) {
   int nsites = sfs.x;
   int ncol = sfs.y;
   double somma = 0.0;
   for (int j=0; j<nsites; j++) {
     // get the sum of values (do exp if they are in log scale)
     somma = 0;
-    for(int i=0; i<ncol; i++) {
-      if (islog) {
-        somma = somma + exp(sfs.data[j][i]);
-        } else {
-        somma = somma + sfs.data[j][i];
-      }
-    }
+    for(int i=0; i<ncol; i++)
+      somma = somma + exp(sfs.data[j][i]);
     // divide each value for the sum
-    for(int i=0; i<ncol; i++) {
-      if (islog) {
-        sfs.data[j][i] = exp(sfs.data[j][i]) / somma;
-      } else {
-        sfs.data[j][i] = sfs.data[j][i] / somma;
-      }
-    }
-   }
+    for(int i=0; i<ncol; i++)
+      sfs.data[j][i] = exp(sfs.data[j][i]) / somma;
+  }
 }
 
 // return max value position of a row from a matrix
