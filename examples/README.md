@@ -2,24 +2,24 @@
 A short tutorial on using ngsTools from BAM files can be found [here](https://github.com/mfumagalli/ngsTools/blob/master/TUTORIAL.md)).
 In most cases, it will contain all the information you need.
 
-The following examples are based on a previous version of ANGSD. The pipeline is the same but some programs might have changed name or the output file may differ. We are working on a general update. In the meantime, please refer to the tutorial which should contain the most updated informaton.
-
 # Posterior probabilities of genotypes and sample allele frequencies
 We use ANGSD to compute genotype posterior probabilities:
 
-    $ANGSD/angsd -sim1 $SIM_DATA/testA.glf.gz -fai ancestral.fa.fai -nInd 24 -doGeno 32 -doPost 1 -doMaf 2 -doSaf 1 -out testA -doMajorMinor 1
+    $ANGSD/angsd -glf $SIM_DATA/testA.glf.gz -fai ancestral.fas.fai -nInd 24 -doGeno 32 -doPost 1 -doMaf 1 -doSaf 1 -out testA -doMajorMinor 1
 
 which will generate these files:
 
 * `testA.arg`: parameters used;
 * `testA.mafs.gz`: estimates of minor allele frequencies;
 * `testA.geno.gz`: genotype posterior probabilities as doubles in binary format;
-* `testA.saf`: log-likelihood ratios of sample allele frequencies
+* `testA.saf.idx`: index file for sample allele frequencies files
+* `testA.saf.gz`: log-likelihood ratios of sample allele frequencies
+* `testA.saf.pos.gz`: positions of sites included on previous file
 
 In case we prefer to weight each site rather than calling SNPs, we need to calculate posterior probabilities of sample allele frequencies:
 
-    $ANGSD/misc/emOptim2 testA.saf 48 -nSites 10000 > testA.saf.ml
-    $ANGSD/angsd -sim1 $SIM_DATA/testA.glf.gz -nInd 24 -fai ancestral.fa.fai -doSaf 1 -pest testA.saf.ml -out testA.rf
+    $ANGSD/misc/realSFS testA.saf.idx > testA.saf.ml
+    $ANGSD/angsd -glf $SIM_DATA/testA.glf.gz -nInd 24 -fai ancestral.fas.fai -doSaf 1 -pest testA.saf.ml -out testA.rf
 
 At this point we can look at the estimated and true pooled site frequency spectrum:
 
@@ -28,7 +28,11 @@ At this point we can look at the estimated and true pooled site frequency spectr
 # Principal Component Analysis (PCA)
 ## Covariance matrix
 We use ngsCovar to estimate a covariance matrix between pairs of individuals. This can be achieved in different ways. For low coverage sequencing data, we recommend to use `-norm 0` option which disables normalization proposed in [Patterson et al. (2006)](http://www.ncbi.nlm.nih.gov/pubmed/17194218).
-The first way is to compute an approximation of the posterior of the covariance matrix, by weighting each site by its probability of being variable, as proposed in [Fumagalli et al. (2013)](http://www.ncbi.nlm.nih.gov/pubmed/23979584):
+Before any analyses, we need to unzip the genotype and sample allele frequency files:
+
+    gunzip -f testA.geno.gz testA.rf.saf.gz
+
+Then, the first way is to compute an approximation of the posterior of the covariance matrix, by weighting each site by its probability of being variable, as proposed in [Fumagalli et al. (2013)](http://www.ncbi.nlm.nih.gov/pubmed/23979584):
 
     ../ngsCovar -probfile testA.geno -outfile testA.covar1 -nind 24 -nsites 10000 -call 0 -sfsfile testA.rf.saf -norm 0
 
@@ -83,4 +87,3 @@ If needed, this estimated 2D-SFS can be converted, using the script `convert.2Ds
 Then we calculate a method-of-moments estimator of _Fst_, at each site, with the following command:
 
     ../ngsFST -postfiles testA1.saf testA2.saf -priorfile testA.joint.spec -nind 10 8 -nsites 10000 -outfile testA.fst
-

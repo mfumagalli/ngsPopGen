@@ -11,8 +11,6 @@ IMPORTANT NOTE i):
 
 In all analisis involving 2 populations, input data must refer to the exact same sites. If they differ (e.g. because of different filtering), you must first get the overlapping subset of sites for both populations.
 To achieve this, you can follow instructions given in the tutorial ([here](https://github.com/mfumagalli/ngsTools/blob/master/TUTORIAL.md)).
-A quick trick to check that everything went fine is to retrieve the dimension of each file (using "ls -l"), then divide this number by 8 and then by the double of the number of individuals plus 1. You should get the final number of sites.
-
 
 IMPORTANT NOTE ii): 
 
@@ -86,7 +84,8 @@ Program to compute the expected correlation matrix between individuals from geno
 
 #
 
-    % ./ngsCovar -probfile pop.geno -outfile pop.covar -nind 40 -nsites 100000 -block_size 20000 -call 0 -norm 0 -sfsfile pop.sfs.ml.norm
+    % gunzip -f pop.saf.gz
+    % ./ngsCovar -probfile pop.geno -outfile pop.covar -nind 40 -nsites 100000 -block_size 20000 -call 0 -norm 0 -sfsfile pop.saf
     
 * not calling genotypes but with SNP calling (preferred way under most circumstances):
 
@@ -104,7 +103,7 @@ Program to compute the expected correlation matrix between individuals from geno
 #### Parameters:
 
     -probfile: file with genotype posterior probabilities
-    -sfsfile: file with sample allele frequency posterior probabilities
+    -sfsfile: file with per site allele frequency posterior probabilities
     -nind: number of individuals
     -nsites: total number of sites; in case of a site subset this is the upper limit
     -offset: in case of a site subset, this is the lower limit
@@ -127,7 +126,7 @@ Program to estimate 2D-SFS from posterior probabilities of sample allele frequen
 
 #### Example:
 
-    % ./ngs2dSFS -postfiles pop.saf pop.saf -outfile spectrum.txt -relative 1 -nind 20 20 -nsites 100000
+    % ./ngs2dSFS -postfiles pop1.saf pop2.saf -outfile spectrum.txt -relative 1 -nind 20 20 -nsites 100000
 
 #### Parameters:
 
@@ -176,7 +175,6 @@ Program to compute estimates of the number of segregating sites, the expected av
     -nind: number of individuals
     -nsites: total number of sites; in case of a site subset this is the upper limit
     -firstbase: in case of a site subset, this is the lower limit
-    -islog: boolean, are postfiles in -log? keep 1
     -iswin: if set to 1, chuncks are considered non-overlapping sliding-windows
     -outfile: name of output file
     -block_size: number of sites in each chunk (for memory reasons)
@@ -184,7 +182,3 @@ Program to compute estimates of the number of segregating sites, the expected av
 
 
 Further examples can be found [here](https://github.com/mfumagalli/ngsPopGen/tree/master/examples).
-
-
-
-

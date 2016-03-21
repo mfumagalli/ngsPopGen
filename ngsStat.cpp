@@ -27,7 +27,7 @@ int main (int argc, char *argv[]) {
   char *outfile=NULL;
   char *foutpost=NULL;
 
-  int argPos = 1, increment = 0, npop = 1, nind1 = 0, nind2 = 0, nsites = 0, verbose = 0, block_size = 20000, isfold=0, firstbase=1, iswin = 0, islog = 1;
+  int argPos = 1, increment = 0, npop = 1, nind1 = 0, nind2 = 0, nsites = 0, verbose = 0, block_size = 20000, firstbase=1, iswin = 0;
 
   // if iswin==1 then block_size is the window size and print the valeus for each window
   // if iswin==0 then block_size is just for efficiency and print values for each site
@@ -56,8 +56,6 @@ int main (int argc, char *argv[]) {
     else if(strcmp(argv[argPos],"-verbose")==0) verbose = atoi(argv[argPos+1]);
     else if(strcmp(argv[argPos],"-block_size")==0) block_size = atoi(argv[argPos+1]);
     else if(strcmp(argv[argPos],"-firstbase")==0) firstbase = atoi(argv[argPos+1]);
-    else if(strcmp(argv[argPos],"-isfold")==0) isfold = atoi(argv[argPos+1]);
-    else if(strcmp(argv[argPos],"-islog")==0) islog = atoi(argv[argPos+1]);
     else if(strcmp(argv[argPos],"-iswin")==0) iswin = atoi(argv[argPos+1]);
     else {
       printf("\tUnknown arguments: %s\n",argv[argPos]);
@@ -106,20 +104,17 @@ int main (int argc, char *argv[]) {
     // READ POSTERIOR PROBABILITIES FILES
     matrix<double> post1;
     matrix<double> post2;
-    post1 = readFileSub(sfsfile1, nind1, start.data[n], end.data[n], isfold);
+    post1 = readFileSub(sfsfile1, nind1, start.data[n], end.data[n]);
     if (npop==2) {
-      post2 = readFileSub(sfsfile2, nind2, start.data[n], end.data[n], isfold);
+      post2 = readFileSub(sfsfile2, nind2, start.data[n], end.data[n]);
     }
 
-    // NORM FROM LOG if necessary
-    if (islog) {
-      // if from -realSFS 1 they are -log
-      normSFS(post1, 1); // 2nd argument is islog
-      if(npop==2) normSFS(post2, 1);
-    }
+    // NORM from LOG
+    normSFS(post1);
+    if(npop==2) normSFS(post2);
 
-    if (npop==1) computeStats(post1, verbose, outpost, iswin, isfold, start.data[n]);
-    if (npop==2) computeStats2Pops(post1, verbose, outpost, iswin, isfold, start.data[n], post2);
+    if (npop==1) computeStats(post1, verbose, outpost, iswin, start.data[n]);
+    if (npop==2) computeStats2Pops(post1, verbose, outpost, iswin, start.data[n], post2);
 
     cleanup(post1);
     if (npop==2) cleanup(post2);
@@ -136,7 +131,3 @@ int main (int argc, char *argv[]) {
 
 
 } // end main
-
- 
-
-

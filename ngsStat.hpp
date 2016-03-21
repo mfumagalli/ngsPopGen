@@ -108,10 +108,10 @@ FILE *getFILE(const char*fname,const char* mode) {
 }
 
 // read a file of posterior probabilities into a matrix but only for a specific subsets of positions (0-based notation)
-matrix<double> readFileSub(char *fname, int nInd, int start, int end, int isfold) {
+matrix<double> readFileSub(char *fname, int nInd, int start, int end) {
   FILE *fp = getFILE(fname,"r");
   size_t filesize =fsize(fname);
-  int n_categ = (isfold ? nInd+1 : 2*nInd+1);
+  int n_categ = 2*nInd+1;
 
   if( strcmp(fname,"-")!=0 ) {
     if( filesize % (n_categ*sizeof(float)) != 2*sizeof(float) ) {
@@ -188,46 +188,31 @@ char *append(const char* a,const char *b){
 
 // print help
 void info() {
-  fprintf(stdout, "\nInput:\n-npop: how many pops (1 or 2)\n-postfiles: .sfs files with posterior probabilities of sample allele frequencies for each population (with or without running sfstools)\n-outfile: name of the output file\n-nind: number of individuals for each population\n-nsites: total number of sites; in case you want to analyze a subset of sites this is the upper limit\n-verbose: level of verbosity, if 0 suppress all messages\n-block_size: to be memory efficient, set this number as the number of sites you want to analyze at each chunk\n-firstbase: in case you want to analyze a subset of your sites this is the lower limit\n-isfold: boolean, is your data folded or not?\n-islog: boolean, are postfiles in log (from -realSFS 1 only, required if 2D-SFS is given)? If you use sfstools then set -islog 1\n-iswin: if 1 then print the value computed for each non-overlapping window defined by block_size\n\n");
+  fprintf(stdout, "\nInput:\n-npop: how many pops (1 or 2)\n-postfiles: .sfs files with posterior probabilities of sample allele frequencies for each population (with or without running sfstools)\n-outfile: name of the output file\n-nind: number of individuals for each population\n-nsites: total number of sites; in case you want to analyze a subset of sites this is the upper limit\n-verbose: level of verbosity, if 0 suppress all messages\n-block_size: to be memory efficient, set this number as the number of sites you want to analyze at each chunk\n-firstbase: in case you want to analyze a subset of your sites this is the lower limit\n-iswin: if 1 then print the value computed for each non-overlapping window defined by block_size\n\n");
 }
 
 
 // normalize SFS and exp it if log (if from -realSFS 1)
-void normSFS(matrix<double> &sfs, int islog) {
+void normSFS(matrix<double> &sfs) {
   int nsites = sfs.x;
   int ncol = sfs.y;
   double somma = 0.0;
   for (int j=0; j<nsites; j++) {
     // get the sum of values (do exp if they are in log scale)
     somma = 0;
-    for(int i=0; i<ncol; i++) {
-      if (islog) {
-        somma = somma + exp(sfs.data[j][i]);
-        } else {
-        somma = somma + sfs.data[j][i];
-      }
-    }
+    for(int i=0; i<ncol; i++)
+      somma = somma + exp(sfs.data[j][i]);
     // divide each value for the sum
-    for(int i=0; i<ncol; i++) {
-      if (islog) {
-        sfs.data[j][i] = exp(sfs.data[j][i]) / somma;
-      } else {
-        sfs.data[j][i] = sfs.data[j][i] / somma;
-      }
-    }
-   }
+    for(int i=0; i<ncol; i++)
+      sfs.data[j][i] = exp(sfs.data[j][i]) / somma;
+  }
 }
 
 // compute summary stats for each block in case of 1 pop and print the results
-void computeStats(matrix<double> &post1, int verbose, FILE *outpost, int iswin, int isfold, int start) {
+void computeStats(matrix<double> &post1, int verbose, FILE *outpost, int iswin, int start) {
 
-  int nind=0; // sample size
-  if (isfold) {
-    nind=(post1.y-1);
-  } else {
-    nind=(post1.y-1)/2;
-  }
-  int nsites=post1.x;
+  int nind = (post1.y-1)/2; // sample size
+  int nsites = post1.x;
 
   // init
   array<double> segsites;
@@ -260,7 +245,7 @@ void computeStats(matrix<double> &post1, int verbose, FILE *outpost, int iswin, 
     segsites.data[s] = 1.0 - post1.data[s][0];
 
     if (verbose==2) fprintf(stderr, "\n%f %f", post1.data[s][0], segsites.data[s]);
-    if (isfold==0) segsites.data[s] = segsites.data[s] - post1.data[s][post1.y-1];
+    segsites.data[s] = segsites.data[s] - post1.data[s][post1.y-1];
     if (verbose==2) fprintf(stderr, " %f %f", post1.data[s][post1.y-1],  segsites.data[s]);
 
     temp=0.0;
@@ -284,16 +269,10 @@ void computeStats(matrix<double> &post1, int verbose, FILE *outpost, int iswin, 
 
 
 // compute summary stats for each block in case of 2 pops and print the results
-void computeStats2Pops(matrix<double> &post1, int verbose, FILE *outpost, int iswin, int isfold, int start, matrix<double> &post2) {
-
-  int nind1=0,nind2=0; // sample sizes
-  if (isfold) {
-    nind1=(post1.y-1);
-    nind2=(post2.y-1);
-  } else {
-    nind1=(post1.y-1)/2;
-    nind2=(post2.y-1)/2;
-  }
+void computeStats2Pops(matrix<double> &post1, int verbose, FILE *outpost, int iswin, int start, matrix<double> &post2) {
+  // sample sizes
+  int nind1 = (post1.y-1)/2;
+  int nind2 = (post2.y-1)/2;
   int nsites=post1.x;
 
   // init
@@ -344,7 +323,7 @@ void computeStats2Pops(matrix<double> &post1, int verbose, FILE *outpost, int is
     start++;
 
     segsites1.data[s]= 1.0 - post1.data[s][0];
-    if (isfold==0) segsites1.data[s]=segsites1.data[s] - post1.data[s][post1.y-1];
+    segsites1.data[s]=segsites1.data[s] - post1.data[s][post1.y-1];
     temp=0.0;
     for (int j=0; j<post1.y; j++) { temp=temp + 2.0*(j/(nind1*2.0))*((nind1*2.0-j)/(nind1*2.0))*post1.data[s][j]; }
     hetero1.data[s]=temp;
@@ -352,35 +331,20 @@ void computeStats2Pops(matrix<double> &post1, int verbose, FILE *outpost, int is
     sum_hetero1=sum_hetero1+hetero1.data[s];
 
     segsites2.data[s]= 1.0 - post2.data[s][0];
-    if (isfold==0) segsites2.data[s]=segsites2.data[s] - post2.data[s][post2.y-1];
+    segsites2.data[s]=segsites2.data[s] - post2.data[s][post2.y-1];
     temp=0.0;
     for (int j=0; j<post2.y; j++) { temp=temp + 2.0*(j/(nind2*2.0))*((nind2*2.0-j)/(nind2*2.0))*post2.data[s][j]; }
     hetero2.data[s]=temp;
     sum_segsites2=sum_segsites2+segsites2.data[s];
     sum_hetero2=sum_hetero2+hetero2.data[s];
 
-    if (isfold) {
-      fixed.data[s]=-999.9;
-    } else {
-      fixed.data[s]=post1.data[s][0]*post2.data[s][post2.y-1] + post2.data[s][0]*post1.data[s][post1.y-1]; 
-    }
+    fixed.data[s]=post1.data[s][0]*post2.data[s][post2.y-1] + post2.data[s][0]*post1.data[s][post1.y-1]; 
     sum_fixed = sum_fixed + fixed.data[s];
 
-    if (isfold) {
-      dxy.data[s]=-999.9;
-    } else {
-
-      dxy.data[s]=0.0;
-
-      for (int i=0; i<post1.y; i++) {
-        for (int j=0; j<post2.y; j++) {
-
-          dxy.data[s] = dxy.data[s] + ( ( (i/(nind1*2.0))*(((nind2*2.0)-j)/(nind2*2.0)) + (((nind1*2.0)-i)/(nind1*2.0))*(j/(nind2*2.0)) ) * post1.data[s][i] * post2.data[s][j] ) ;
-
-        }
-      }
-
-    }
+    dxy.data[s]=0.0;
+    for (int i=0; i<post1.y; i++)
+      for (int j=0; j<post2.y; j++)
+	dxy.data[s] = dxy.data[s] + ( ( (i/(nind1*2.0))*(((nind2*2.0)-j)/(nind2*2.0)) + (((nind1*2.0)-i)/(nind1*2.0))*(j/(nind2*2.0)) ) * post1.data[s][i] * post2.data[s][j] ) ;
     sum_dxy = sum_dxy + dxy.data[s];
 
 
