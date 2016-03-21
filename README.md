@@ -113,7 +113,6 @@ Program to compute the expected correlation matrix between individuals from geno
            2 [normalized by 2p(1-p)]
     -minmaf: ignore sites below this threshold of minor allele frequency
     -call: call genotypes based on the maximum posterior probability
-    -islog: boolean, are postfiles in -log?
     -outfile: name of output file
     -block_size: number of sites in each chunk (for memory reasons)
     -verbose: level of verbosity

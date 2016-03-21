@@ -22,14 +22,14 @@ int main (int argc, char *argv[]) {
  
   // possible inputs
   char *estfile=NULL; // estimated genotypes with probs (from angsd -doGeno 64)
-  char *sfsfile=NULL; // sfs probs (-realSFS 1 + optimSFS = sfstools [already normalized and not log]); this is a major change 
+  char *sfsfile=NULL; // sfs probs (-realSFS 1 + optimSFS = sfstools)
   char *genoquality=NULL; // list of boolean, whether to keep or not each site
   
   FILE *outest;
   char *outfiles=NULL;
   char *foutest=NULL;
   
-  int argPos = 1, increment = 0, nind = 0, nsites = 0, debug = 0, block_size = 20000, call=0, offset=1, maxgeno=0, isfold=0, norm=0, islog=0;
+  int argPos = 1, increment = 0, nind = 0, nsites = 0, debug = 0, block_size = 20000, call=0, offset=1, maxgeno=0, norm=0;
   double esites = 0.0, minmaf = 0.0;
  
   /// READ AND ASSIGN INPUT PARAMETERS
@@ -58,10 +58,6 @@ int main (int argc, char *argv[]) {
       norm = atoi(argv[argPos+1]);
     else if(strcmp(argv[argPos],"-genoquality")==0)
       genoquality = argv[argPos+1];
-    else if(strcmp(argv[argPos],"-isfold")==0) // whether the .sfs is folded or not 
-      isfold = atoi(argv[argPos+1]);
-    else if(strcmp(argv[argPos],"-islog")==0) // whether the .sfs is in log or not (yes if from inbreeding) 
-      islog = atoi(argv[argPos+1]);
     else if(strcmp(argv[argPos],"-verbose")==0) 
       debug = atoi(argv[argPos+1]);
     else { // input is not a valid one 
@@ -216,11 +212,11 @@ int main (int argc, char *argv[]) {
     if (sfsfile!=NULL) {
       // read sfs
       if (debug) fprintf(stderr, "...weighting...");
-      sfs = readFileSub(sfsfile, nind, start.data[n], end.data[n], isfold);
-      if (islog==0) normSFS(sfs, 1);
+      sfs = readFileSub(sfsfile, nind, start.data[n], end.data[n]);
+      normSFS(sfs);
       if (debug==1) fprintf(stderr, "\nGot  sfs: %d %d, e.g. %f %f", sfs.x, sfs.y, sfs.data[0][0], sfs.data[1][1]);
       if (debug==1) fprintf(stderr, "\nGetting pvar...");
-      getPvar(sfs, pvar, isfold);
+      getPvar(sfs, pvar);
       if (debug==1) fprintf(stderr, ": %d , %f %f", pvar.x, pvar.data[0], pvar.data[1]);
       cleanup(sfs);
       if (debug==1) fprintf(stderr, "\nUpdating covar...");
