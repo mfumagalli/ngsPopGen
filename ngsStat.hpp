@@ -111,45 +111,36 @@ FILE *getFILE(const char*fname,const char* mode) {
 matrix<double> readFileSub(char *fname, int nInd, int start, int end, int isfold) {
   FILE *fp = getFILE(fname,"r");
   size_t filesize =fsize(fname);
-  if (isfold==0) {
-    if((filesize %(sizeof(double)*(2*nInd+1)) )) {
-      fprintf(stderr,"\n\t-> Possible error,binaryfiles might be broken\n");
-      exit(-1);
-    }
-  } else {
-    if((filesize %(sizeof(double)*(nInd+1)) )) {
-      fprintf(stderr,"\n\t-> Possible error,binaryfiles might be broken\n");
+  int n_categ = (isfold ? nInd+1 : 2*nInd+1);
+
+  if( strcmp(fname,"-")!=0 ) {
+    if( filesize % (n_categ*sizeof(float)) != 2*sizeof(float) ) {
+      fprintf(stderr,"\n\t-> Possible error reading SFS, binary file might be broken...\n");
       exit(-1);
     }
   }
+
   int nsites = end-start+1;
   double **data = new double*[nsites];
-  if (isfold) {
-          fseek(fp, sizeof(double)*(nInd+1)*start, SEEK_SET);
-  } else {
-          fseek(fp, sizeof(double)*(2*nInd+1)*start, SEEK_SET);
-  }
-  if (isfold) {
-    for(int i=0; i<nsites; i++) {
-      double *tmp = new double[nInd+1];
-      fread(tmp,sizeof(double),nInd+1,fp);
-      data[i]= tmp;
+  float float_tmp = 0;
+
+  // Locate data to read
+  fseek(fp, (2+n_categ*start)*sizeof(float), SEEK_SET);
+
+  // Read data
+  for(int i=0; i<nsites; i++) {
+    double *tmp = new double[n_categ];
+    for(int c=0; c<n_categ; c++){
+      fread(&float_tmp, sizeof(float), 1, fp);
+      tmp[c] = (double) float_tmp;
     }
-  } else {
-    for(int i=0; i<nsites; i++) {
-      double *tmp = new double[2*nInd+1];
-      fread(tmp,sizeof(double),2*nInd+1,fp);
-      data[i]= tmp;
-    }
+    data[i] = tmp;
   }
+
   fclose(fp);
   matrix<double> ret;
   ret.x = nsites;
-  if (isfold) {
-    ret.y = nInd+1;
-  } else {
-    ret.y = 2*nInd+1;
-  }
+  ret.y = n_categ;
   ret.data = data;
   return ret;
 }
