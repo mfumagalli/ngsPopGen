@@ -6,13 +6,13 @@ ANGSD=../../angsd
 
 ##### Clean-up
 rm -f testA*
-
+touch -d 'next minute' $SIM_DATA/testAF.ANC.fas.fai
 
 
 ##### Genotypes' and sample allele frequencies' posterior probabilities
-$ANGSD/angsd -glf $SIM_DATA/testA.glf.gz -fai $SIM_DATA/testAF.ANC.fai -nInd 24 -doMajorMinor 1 -doMaf 1 -doPost 1 -doGeno 32 -doSaf 1 -anc $SIM_DATA/testAF.ANC.fas -out testA
-$ANGSD/misc/emOptim2 testA.saf 48 -nSites 10000 > testA.saf.ml
-$ANGSD/angsd -glf $SIM_DATA/testA.glf.gz -fai $SIM_DATA/testAF.ANC.fai -nInd 24 -doSaf 1 -anc $SIM_DATA/testAF.ANC.fas -out testA.rf
+$ANGSD/angsd -glf $SIM_DATA/testA.glf.gz -fai $SIM_DATA/testAF.ANC.fas.fai -nInd 24 -doMajorMinor 1 -doMaf 1 -doPost 1 -doGeno 32 -doSaf 1 -anc $SIM_DATA/testAF.ANC.fas -out testA
+$ANGSD/misc/realSFS testA.saf.idx -seed 12345 > testA.saf.ml
+$ANGSD/angsd -glf $SIM_DATA/testA.glf.gz -fai $SIM_DATA/testAF.ANC.fas.fai -nInd 24 -doSaf 1 -anc $SIM_DATA/testAF.ANC.fas -out testA.rf
 
 # Estimated and true pooled site frequency spectrum
 #Rscript --vanilla --slave -e 'barplot(rbind(as.numeric(scan("../../ngsSim/examples/testA.frq", what="char")), exp(as.numeric(scan("testA.saf.ml", what="char")))), beside=T, legend=c("True","Estimated"))'
@@ -23,7 +23,7 @@ $ANGSD/angsd -glf $SIM_DATA/testA.glf.gz -fai $SIM_DATA/testAF.ANC.fai -nInd 24 
 
 ##### PCA
 # Get covariance matrix
-gunzip -f testA.geno.gz
+gunzip -f testA.geno.gz testA.rf.saf.gz
 ../ngsCovar -probfile testA.geno -outfile testA.covar1 -nind 24 -nsites 10000 -call 0 -sfsfile testA.rf.saf -norm 0
 ../ngsCovar -probfile testA.geno -outfile testA.covar2 -nind 24 -nsites 10000 -call 0 -minmaf 0.05
 ../ngsCovar -probfile testA.geno -outfile testA.covar3 -nind 24 -nsites 10000 -call 1 -minmaf 0.05
@@ -40,16 +40,17 @@ gunzip -f testA.geno.gz
 
 ##### Statistics
 # Pop 1
-$ANGSD/angsd -glf $SIM_DATA/testA1.glf.gz -fai $SIM_DATA/testAF.ANC.fai -nInd 10 -doMajorMinor 1 -doMaf 1 -doPost 1 -doGeno 32 -doSaf 1 -anc $SIM_DATA/testAF.ANC.fas -out testA1
-$ANGSD/misc/emOptim2 testA1.saf 20 -nSites 10000 > testA1.saf.ml
-$ANGSD/angsd -glf $SIM_DATA/testA1.glf.gz -fai $SIM_DATA/testAF.ANC.fai -nInd 10 -doSaf 1 -anc $SIM_DATA/testAF.ANC.fas -pest testA1.saf.ml -out testA1.rf
+$ANGSD/angsd -glf $SIM_DATA/testA1.glf.gz -fai $SIM_DATA/testAF.ANC.fas.fai -nInd 10 -doMajorMinor 1 -doMaf 1 -doPost 1 -doGeno 32 -doSaf 1 -anc $SIM_DATA/testAF.ANC.fas -out testA1
+$ANGSD/misc/realSFS testA1.saf.idx -seed 12345 > testA1.saf.ml
+$ANGSD/angsd -glf $SIM_DATA/testA1.glf.gz -fai $SIM_DATA/testAF.ANC.fas.fai -nInd 10 -doSaf 1 -anc $SIM_DATA/testAF.ANC.fas -pest testA1.saf.ml -out testA1.rf
 # Pop 2
-$ANGSD/angsd -glf $SIM_DATA/testA2.glf.gz -fai $SIM_DATA/testAF.ANC.fai -nInd 8 -doMajorMinor 1 -doMaf 1 -doPost 1 -doGeno 32 -doSaf 1 -anc $SIM_DATA/testAF.ANC.fas -out testA2
-$ANGSD/misc/emOptim2 testA2.saf 16 -nSites 10000 > testA2.saf.ml
-$ANGSD/angsd -glf $SIM_DATA/testA2.glf.gz -fai $SIM_DATA/testAF.ANC.fai -nInd 8 -doSaf 1 -anc $SIM_DATA/testAF.ANC.fas -pest testA2.saf.ml -out testA2.rf
+$ANGSD/angsd -glf $SIM_DATA/testA2.glf.gz -fai $SIM_DATA/testAF.ANC.fas.fai -nInd 8 -doMajorMinor 1 -doMaf 1 -doPost 1 -doGeno 32 -doSaf 1 -anc $SIM_DATA/testAF.ANC.fas -out testA2
+$ANGSD/misc/realSFS testA2.saf.idx -seed 12345 > testA2.saf.ml
+$ANGSD/angsd -glf $SIM_DATA/testA2.glf.gz -fai $SIM_DATA/testAF.ANC.fas.fai -nInd 8 -doSaf 1 -anc $SIM_DATA/testAF.ANC.fas -pest testA2.saf.ml -out testA2.rf
 
 # Get stats
-../ngsStat -npop 2 -postfiles testA1.rf.saf testA2.rf.saf -nsites 10000 -iswin 1 -nind 10 8 -outfile testA.stat -isfold 0 -islog 0 -block_size 100
+gunzip -f testA1.rf.saf.gz testA2.rf.saf.gz
+../ngsStat -npop 2 -postfiles testA1.rf.saf testA2.rf.saf -nsites 10000 -iswin 1 -nind 10 8 -outfile testA.stat -block_size 100
 
 # Plot results
 #Rscript --vanilla --slave $SCRIPTS/plotSS.R -i testA.stat -o testA.stat.pdf -n pop1-pop2
@@ -65,9 +66,10 @@ $ANGSD/angsd -glf $SIM_DATA/testA2.glf.gz -fai $SIM_DATA/testAF.ANC.fai -nInd 8 
 #Rscript --vanilla --slave $SCRIPTS/plot2dSFS.R testA.joint.spec testA.joint.spec.pdf pop1 pop2
 
 # Estimate Fst
-../ngsFST -postfiles testA1.saf testA2.saf -priorfile testA.joint.spec -nind 10 8 -nsites 10000 -outfile testA.fst -islog 1
-../ngsFST -postfiles testA1.saf testA2.saf -priorfiles testA1.saf.ml testA2.saf.ml -nind 10 8 -nsites 10000 -outfile testA.fst2 -islog 1
-../ngsFST -postfiles testA1.rf.saf testA2.rf.saf -nind 10 8 -nsites 10000 -outfile testA.fst3 -islog 0
+gunzip -f testA1.saf.gz testA2.saf.gz
+../ngsFST -postfiles testA1.saf testA2.saf -priorfile testA.joint.spec -nind 10 8 -nsites 10000 -outfile testA.fst1
+../ngsFST -postfiles testA1.saf testA2.saf -priorfiles testA1.saf.ml testA2.saf.ml -nind 10 8 -nsites 10000 -outfile testA.fst2
+../ngsFST -postfiles testA1.rf.saf testA2.rf.saf -nind 10 8 -nsites 10000 -outfile testA.fst3
 
 # Plot
 #Rscript --vanilla --slave $SCRIPTS/plotFST.R -i testA.fst -o testA.fst.pdf -w 100 -s 50
