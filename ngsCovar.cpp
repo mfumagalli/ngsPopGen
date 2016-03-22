@@ -181,7 +181,7 @@ int main (int argc, char *argv[]) {
 
           //fprintf(stderr, "\nindiv: %d",h);
 
-          maxgeno=maxposarr(esti, i, h);
+          maxgeno=maxposarr(esti, i, h, h+3);
 
           //fprintf(stderr, "\nindiv %d and maxgeno %d", h, maxgeno);
 
@@ -213,7 +213,7 @@ int main (int argc, char *argv[]) {
       // read sfs
       if (debug) fprintf(stderr, "...weighting...");
       sfs = readFileSub(sfsfile, nind, start.data[n], end.data[n]);
-      normSFS(sfs);
+      normSFS(sfs, true);
       if (debug==1) fprintf(stderr, "\nGot  sfs: %d %d, e.g. %f %f", sfs.x, sfs.y, sfs.data[0][0], sfs.data[1][1]);
       if (debug==1) fprintf(stderr, "\nGetting pvar...");
       getPvar(sfs, pvar);

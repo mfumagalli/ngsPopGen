@@ -119,8 +119,8 @@ int main (int argc, char *argv[]) {
     post1 = readFileSub(sfsfile1, nind1, start.data[n], end.data[n]);
     post2 = readFileSub(sfsfile2, nind2, start.data[n], end.data[n]);
     // Normalize SFS
-    normSFS(post1);
-    normSFS(post2);
+    normSFS(post1, true);
+    normSFS(post2, true);
 
     // COMPUTE SFS
     sumSpectrum(spec, post1, post2, maxlike);

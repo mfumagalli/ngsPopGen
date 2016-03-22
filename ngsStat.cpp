@@ -110,8 +110,8 @@ int main (int argc, char *argv[]) {
     }
 
     // NORM from LOG
-    normSFS(post1);
-    if(npop==2) normSFS(post2);
+    normSFS(post1, true);
+    if(npop==2) normSFS(post2, true);
 
     if (npop==1) computeStats(post1, verbose, outpost, iswin, start.data[n]);
     if (npop==2) computeStats2Pops(post1, verbose, outpost, iswin, start.data[n], post2);
