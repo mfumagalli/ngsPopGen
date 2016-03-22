@@ -2,21 +2,20 @@
 # ngsPopGen
 
 Several tools to perform population genetic analyses from NGS data:
- * ` ngsFst`  - Quantificate population genetic differentiation
- * ` ngsCovar`  - Population structure via PCA (principal components analysis)
- * ` ngs2dSFS`  - Estimate 2D-SFS from posterior probabilities of sample allele frequencies
+ * ` ngsFst`   - Quantificate population genetic differentiation
+ * ` ngsCovar` - Population structure via PCA (principal components analysis)
+ * ` ngs2dSFS` - Estimate 2D-SFS from posterior probabilities of sample allele frequencies
  * ` ngsStat`  - Estimates number of segregating sites, expected average heterozygosity, and number of fixed differences and Dxy (if 2 populations provided).
 
 IMPORTANT NOTE i): 
 
-In all analisis involving 2 populations, input data must refer to the exact same sites. If they differ (e.g. because of different filtering), you must first get the overlapping subset of sites for both populations.
+In all analises involving 2 populations, input data must refer to the exact same sites. If they differ (e.g. because of different filtering), you must first get the overlapping subset of sites for both populations.
 To achieve this, you can follow instructions given in the tutorial ([here](https://github.com/mfumagalli/ngsTools/blob/master/TUTORIAL.md)).
 
 IMPORTANT NOTE ii): 
 
 The use of folded data (spectrum or sample allele frequencies probabilities) is no longer supported.
 In case you do not have a reliable ancestral information, please use your reference sequence to polarise your data and follow all the steps as documented here. However, do not attempt to make any inference based on the resulting unfolded reference/non-reference based - site frequency spectrum.
-
 
 IMPORTANT NOTE iii):
 
@@ -59,15 +58,14 @@ The output is a tab-separated text file. Each row represents a site. Columns are
     % ./ngsFST -postfiles pop1.saf pop2.saf -priorfile spectrum2D.txt -nind 20 20 -nsites 100000 -outfile pops.fst -verbose 0
 
 #### Parameters:
-
-    -postfiles: files with sample allele frequencies likelihoods for each population
-    -priorfile: 2D-SFS to be used as a prior; you can use ngs2dSfs with parameter -relative set to 1
-    -nind: number of individuals for each population
-    -nsites: total number of sites; in case of a site subset this is the upper limit
-    -firstbase: in case of a site subset, this is the lower limit
-    -outfile: name of the output file
-    -block_size: number of sites in each chunk (for memory reasons, increase it if you can use more RAM)
-    -verbose: level of verbosity
+* `-postfiles FILE_1 FILE_2`: files with sample allele frequencies likelihoods for each population
+* `-priorfile FILE`: 2D-SFS to be used as a prior; you can use ngs2dSfs with parameter -relative set to 1
+* `-nind INT`: number of individuals for each population
+* `-nsites INT`: total number of sites; in case of a site subset this is the upper limit
+* `-firstbase INT`: in case of a site subset, this is the lower limit
+* `-outfile FILE`: name of the output file
+* `-block_size INT`: number of sites in each chunk (for memory reasons, increase it if you can use more RAM)
+* `-verbose INT`: level of verbosity
 
 ---
 
@@ -100,21 +98,18 @@ Program to compute the expected correlation matrix between individuals from geno
 
 
 #### Parameters:
-
-    -probfile: file with genotype posterior probabilities
-    -sfsfile: file with per site allele frequency posterior probabilities
-    -nind: number of individuals
-    -nsites: total number of sites; in case of a site subset this is the upper limit
-    -offset: in case of a site subset, this is the lower limit
-    -genoquality: text file with 'nsites' lines stating whether to use (1) or ignore (0) the site
-    -norm: 0 [no normalization, recommended if no SNP calling is performed]
-           1 [matrix is normalized by p(1-p) as in Patterson et al (2006)]
-           2 [normalized by 2p(1-p)]
-    -minmaf: ignore sites below this threshold of minor allele frequency
-    -call: call genotypes based on the maximum posterior probability
-    -outfile: name of output file
-    -block_size: number of sites in each chunk (for memory reasons)
-    -verbose: level of verbosity
+* `-probfile FILE`: file with genotype posterior probabilities
+* `-sfsfile FILE`: file with per site allele frequency posterior probabilities
+* `-nind INT`: number of individuals
+* `-nsites INT`: total number of sites; in case of a site subset this is the upper limit
+* `-offset INT`: in case of a site subset, this is the lower limit
+* `-genoquality FILE`: text file with 'nsites' lines stating whether to use (1) or ignore (0) the site
+* `-norm INT`: normalization procedure; either "0" for no normalization (recommended if no SNP calling was performed), "1" for normalization by `p(1-p)` (Patterson et al, 2006) or "2" for normalization by `2p(1-p)`
+* `-minmaf FLOAT`: ignore sites below this threshold of minor allele frequency
+* `-call`: call genotypes based on the maximum posterior probability
+* `-outfile FILE`: name of output file
+* `-block_size INT`: number of sites in each chunk (for memory reasons)
+* `-verbose INT`: level of verbosity
 
 ---
 
@@ -127,15 +122,14 @@ Program to estimate 2D-SFS from posterior probabilities of sample allele frequen
     % ./ngs2dSFS -postfiles pop1.saf pop2.saf -outfile spectrum.txt -relative 1 -nind 20 20 -nsites 100000
 
 #### Parameters:
-
-    -postfiles: file with sample allele frequency posterior probabilities (or likelihoods) for each population
-    -nind: number of individuals
-    -nsites: total number of sites; in case of a site subset this is the upper limit
-    -offset: in case of a site subset, this is the lower limit
-    -outfile: name of output file
-    -maxlike: compute the MLE as the sum across sites' joint allele frequency (1, preferred) or as the sum of the products of likelihoods (0)
-    -relative: boolean, whether input are absolute counts of sites with a specific joint allele frequency (0) or relative frequencies (1)
-    -block_size: memory efficiency, number of sites for each chunk
+* `-postfiles FILE`: file with sample allele frequency posterior probabilities (or likelihoods) for each population
+* `-nind INT`: number of individuals
+* `-nsites INT`: total number of sites; in case of a site subset this is the upper limit
+* `-offset INT`: in case of a site subset, this is the lower limit
+* `-outfile FILE`: name of output file
+* `-maxlike INT`: how to compute the MLE; either, "1" (preferred) to sum across sites' joint allele frequency, or "0" to sum of the products of likelihoods
+* `-relative INT`: whether input are absolute counts of sites with a specific joint allele frequency (0) or relative frequencies (1)
+* `-block_size INT`: number of sites for each chunk (for memory efficiency only)
 
 ANGSD can compute a ML estimate of the 2D-SFS which should be preferred when many sites are available. However, ANGSD output file should be transformed (from log to un-log and from space-separated to tab-separated) before being used in ngsFST.
 
@@ -167,16 +161,15 @@ Program to compute estimates of the number of segregating sites, the expected av
     ./ngsStat -npop 1 -postfiles pop1.saf -nsites 1000 -iswin 0 -nind 10 -outfile pops.stat
 
 #### Parameters:
-
-    -npop: number of populations (should be the first one to be specified)
-    -postfiles: file with sample allele frequency posterior probabilities for each population
-    -nind: number of individuals
-    -nsites: total number of sites; in case of a site subset this is the upper limit
-    -firstbase: in case of a site subset, this is the lower limit
-    -iswin: if set to 1, chuncks are considered non-overlapping sliding-windows
-    -outfile: name of output file
-    -block_size: number of sites in each chunk (for memory reasons)
-    -verbose: level of verbosity
+* `-npop INT`: number of populations (should be the first one to be specified)
+* `-postfiles`: file with sample allele frequency posterior probabilities for each population
+* `-nind INT`: number of individuals
+* `-nsites INT`: total number of sites; in case of a site subset this is the upper limit
+* `-firstbase INT`: in case of a site subset, this is the lower limit
+* `-iswin INT`: if set to 1, chuncks are considered non-overlapping sliding-windows
+* `-outfile FILE`: name of output file
+* `-block_size INT`: number of sites in each chunk (for memory reasons)
+* `-verbose INT`: level of verbosity
 
 
 Further examples can be found [here](https://github.com/mfumagalli/ngsPopGen/tree/master/examples).
