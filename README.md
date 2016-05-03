@@ -172,4 +172,5 @@ Program to compute estimates of the number of segregating sites, the expected av
 * `-verbose INT`: level of verbosity
 
 
-Further examples can be found [here](https://github.com/mfumagalli/ngsPopGen/tree/master/examples).
+Further examples can be found in the [Tutorial](https://github.com/mfumagalli/ngsTools/blob/master/TUTORIAL.md).
+
