@@ -3,8 +3,6 @@
 #include <string> //for str operations
 #include <unistd.h>
 
-using namespace std;
-
 // a general matrix style structure
 template <typename T>
 struct matrix{
