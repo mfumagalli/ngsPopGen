@@ -80,8 +80,9 @@ gunzip -f testA1.saf.gz testA2.saf.gz
 
 ##### Check MD5
 rm -f *.arg
-md5sum testA* | sort -k 2,2 > /tmp/test.md5
-if diff /tmp/test.md5 test.md5 > /dev/null
+TMP=`mktemp`
+md5sum testA* | sort -k 2,2 > $TMP
+if diff $TMP test.md5 > /dev/null
 then
     echo "ngsPopGen: All tests OK!"
 else
