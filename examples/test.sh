@@ -80,7 +80,7 @@ gunzip -f testA1.saf.gz testA2.saf.gz
 
 ##### Check MD5
 rm -f *.arg
-TMP=`mktemp`
+TMP=`mktemp --suffix .ngsPopGen`
 md5sum testA* | sort -k 2,2 > $TMP
 if diff $TMP test.md5 > /dev/null
 then
