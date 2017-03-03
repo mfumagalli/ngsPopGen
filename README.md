@@ -77,18 +77,18 @@ Program to compute the expected correlation matrix between individuals from geno
 
 #### Examples:
 
-* not calling genotypes and weighting by each site's probability of being variable (recommended if no SNP calling is performed and depth is extremely low, otherwise please use other methods below):
-
-#
-
-    % gunzip -f pop.saf.gz
-    % ./ngsCovar -probfile pop.geno -outfile pop.covar -nind 40 -nsites 100000 -block_size 20000 -call 0 -norm 0 -sfsfile pop.saf
-    
 * not calling genotypes but with SNP calling (preferred way under most circumstances):
 
 #
 
     % ./ngsCovar -probfile pop.geno -outfile pop.covar -nind 40 -nsites 100000 -block_size 20000 -call 0 -minmaf 0.05
+
+* not calling genotypes and no SNP calling (weighting by each site's probability of being variable; recommended if depth is extremely low):
+
+#
+
+    % gunzip -f pop.saf.gz
+    % ./ngsCovar -probfile pop.geno -outfile pop.covar -nind 40 -nsites 100000 -block_size 20000 -call 0 -norm 0 -sfsfile pop.saf
     
 * calling genotypes (this is kept for compatibility but should not be used unless you have high-depth data, > 20X):
 

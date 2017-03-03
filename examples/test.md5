@@ -16,7 +16,7 @@ d803500150a8be988e35f0d9d72b2406  testA1.saf.ml
 296e9560401bba06e57b66b8fced07f9  testA2.saf.idx
 9607f2ec5f82a4bf7ac1485617bfbdb2  testA2.saf.ml
 2ef0db351e1c2ab28ea069af4e1c8ed3  testA2.saf.pos.gz
-183b266e5acbf7f40792f9ec59b4b0b7  testA.covar1
+ffff04476222b0fceb669a2f850f305b  testA.covar1
 517f8fc6fe8677389922930434995119  testA.covar2
 a98275d44976dfab3a1943d479229ded  testA.covar3
 fe9a2245b034734dc9b3afa7f10e4369  testA.fst1
@@ -25,7 +25,7 @@ efed98d852aef895699922b227abff03  testA.fst3
 9a46a6e8cce8b241fe51a5f5c21b34ee  testA.geno
 ea9aa8882271823dbe31f8947a3bf142  testA.joint.spec
 4ad56bafab229c3e69bcff5c3d969119  testA.mafs.gz
-da193a382b2d21032cb0d4cf5efd94c3  testA.rf.saf
+325d650261660adff0c759d870d2eed8  testA.rf.saf
 2f015df7d60fc930b55270407bb82924  testA.rf.saf.idx
 2ef0db351e1c2ab28ea069af4e1c8ed3  testA.rf.saf.pos.gz
 5799f1e3162c5c2f9e8680cf205f4953  testA.saf.gz

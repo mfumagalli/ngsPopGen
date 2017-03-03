@@ -12,7 +12,7 @@ touch -d 'next minute' $SIM_DATA/testAF.ANC.fas.fai
 ##### Genotypes' and sample allele frequencies' posterior probabilities
 $ANGSD/angsd -glf $SIM_DATA/testA.glf.gz -fai $SIM_DATA/testAF.ANC.fas.fai -nInd 24 -doMajorMinor 1 -doMaf 1 -doPost 1 -doGeno 32 -doSaf 1 -anc $SIM_DATA/testAF.ANC.fas -out testA
 $ANGSD/misc/realSFS testA.saf.idx -seed 12345 > testA.saf.ml
-$ANGSD/angsd -glf $SIM_DATA/testA.glf.gz -fai $SIM_DATA/testAF.ANC.fas.fai -nInd 24 -doSaf 1 -anc $SIM_DATA/testAF.ANC.fas -out testA.rf
+$ANGSD/angsd -glf $SIM_DATA/testA.glf.gz -fai $SIM_DATA/testAF.ANC.fas.fai -nInd 24 -doSaf 1 -anc $SIM_DATA/testAF.ANC.fas -pest testA.saf.ml -out testA.rf
 
 # Estimated and true pooled site frequency spectrum
 #Rscript --vanilla --slave -e 'barplot(rbind(as.numeric(scan("../../ngsSim/examples/testA.frq", what="char")), exp(as.numeric(scan("testA.saf.ml", what="char")))), beside=T, legend=c("True","Estimated"))'
