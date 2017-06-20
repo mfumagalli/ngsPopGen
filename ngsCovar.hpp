@@ -64,7 +64,7 @@ double calcCovarUp (matrix<double> &m, array<double> a, matrix<double> &covar, d
     }
     data[i] = tmp;
   }
-  fprintf(stderr, "nsites is %d but effective is %f\n", nsites, eff_nsites);
+  fprintf(stderr, "Message (not error/warning): for this window nsites is %d and effective is %f\n", nsites, eff_nsites);
   matrix<double> ret;
   ret.x = nind;
   ret.y = nind;
