@@ -25,12 +25,18 @@ Moreover, this will reduce noise due to monomorphic sites, especially when the s
 
 ### Installation
 
+To install the entire package just download the source code:
+
     % git clone https://github.com/mfumagalli/ngsPopGen.git
 
-To install these tools just run:
+and run:
 
     % cd ngsPopGen
     % make
+
+To run the tests (only if installed through [ngsTools](https://github.com/mfumagalli/ngsTools)):
+
+    % make test
 
 Executables are built into the main directory. If you wish to clean all binaries and intermediate files:
 
