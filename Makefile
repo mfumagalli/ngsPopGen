@@ -14,3 +14,5 @@ test:
 
 clean:
 	@rm -rf $(TOOLS) *.o examples/testA*
+
+.PHONY: all clean test
