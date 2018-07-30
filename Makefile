@@ -3,7 +3,7 @@ CXX ?= g++
 TOOLS = ngs2dSFS ngsCovar ngsFST ngsStat
 
 CXXFLAGS := -O3 -Wall $(CXXFLAGS)
-LDLIBS = -lm -lz
+LDLIBS = -lm
 
 all: $(TOOLS)
 
