@@ -1,7 +1,7 @@
+CXX ?= g++
 
 TOOLS = ngs2dSFS ngsCovar ngsFST ngsStat
 
-CCX ?= g++
 CFLAGS = -lm -lz -O3 -Wall
 
 all: $(TOOLS)
