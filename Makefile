@@ -7,7 +7,7 @@ LDLIBS = -lm -lz
 
 all: $(TOOLS)
 
-$(TOOLS):
+$(TOOLS): %: %.cpp %.hpp shared.hpp
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $@.cpp $(LDFLAGS) $(LDLIBS) -o $@
 
 test:
