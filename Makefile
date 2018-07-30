@@ -2,12 +2,13 @@ CXX ?= g++
 
 TOOLS = ngs2dSFS ngsCovar ngsFST ngsStat
 
-CFLAGS = -lm -lz -O3 -Wall
+CXXFLAGS := -O3 -Wall $(CXXFLAGS)
+LDLIBS = -lm -lz
 
 all: $(TOOLS)
 
 $(TOOLS):
-	$(CXX) $(CFLAGS) $@.cpp -o $@
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $@.cpp $(LDFLAGS) $(LDLIBS) -o $@
 
 test:
 	@cd examples/; bash test.sh 2> test.log; cd ../
