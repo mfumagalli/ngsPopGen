@@ -15,6 +15,7 @@ my $minInd;
 
 my $usage = <<_EOUSAGE_;
 #########################################################################################
+#this script updates 
 # getDxy.pl --pop1maf <FILE> --pop2maf <FILE> --nInd <Integer>
 # Required:
 #  --pop1maf        a text maf file output from ANGSD with apporpriate filtering for Population 1
@@ -61,13 +62,13 @@ while($line1=<POP1MAF>){
         #read in maf from pop2
         $line2=<POP2MAF>;chomp $line2;my @parts2=split('\t',$line2);
         
-if(($parts[6]>=$minInd)&&($parts2[6]>=$minInd)){#use only sites that are covered by atleast $minInd individuals in each population
+if(($parts[7]>=$minInd)&&($parts2[7]>=$minInd)){#use only sites that are covered by at least $minInd individuals in each population, in v2 updated the position of the nIND column in MAF file 
 
         #if($parts3[4]>0.99999999){#use only sites with pvar >0.99999999, same as criteria used for fst
 
                 if(($parts[2]=~/$parts2[2]/)&&($parts[3]=~/$parts2[3]/)){#check if the major and minor allele are matching
 
-                $dxy=$parts[4]*(1-$parts2[4])+($parts2[4]*(1-$parts[4]));
+                $dxy=$parts[5]*(1-$parts2[5])+($parts2[5]*(1-$parts[5])); # 
 
                 print "$parts[0]\t$parts[1]\t$dxy\n"; # print scaffold, position and per site dxy
 
@@ -75,7 +76,7 @@ if(($parts[6]>=$minInd)&&($parts2[6]>=$minInd)){#use only sites that are covered
 
                 if(($parts[2]=~/$parts2[3]/)&&($parts[3]=~/$parts2[2]/)){#check if the major and minor allele are NOT matching
 
-                $dxy=($parts[4]*$parts2[4])+((1-$parts2[4])*(1-$parts[4]));
+                $dxy=($parts[5]*$parts2[5])+((1-$parts2[5])*(1-$parts[5])); 
 
                 print "$parts[0]\t$parts[1]\t$dxy\n";# print scaffold, position and per site dxy
 
